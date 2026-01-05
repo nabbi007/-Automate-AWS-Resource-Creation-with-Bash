@@ -81,10 +81,11 @@ Save screenshots in `docs/screenshots/` with meaningful names. Reference them in
 
 Place the image links after the corresponding Quick start steps or in an "Example outputs" section.
 
-## Security notes
+## notes
 - Do NOT hard-code AWS credentials. Use `aws configure`, environment variables, or IAM roles.
 - Use least-privilege IAM policies and tag resources (`Project=AutomationLab`) so cleanup is safe.
+- Be mindful of the region, because their ami varies
+  
 
-## Want the scripts?
-I can generate the example scripts with safe defaults and comments if you want — tell me and I’ll add them here.
+
 
