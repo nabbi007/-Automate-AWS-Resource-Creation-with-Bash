@@ -70,24 +70,35 @@ export AWS_REGION=eu-west-1
 
 ## Screenshot of Execution
 
-## Security Group
+
 screenshot/security_group.png
 
-## EC2
+
 screenshot/ec2.png
 
-## S3 Bucket
 screenshot/bucket.png
 
-## STS
+
 screenshot/sts.png
 
 ## Cleanup
 screenshot/cleanup.png
 
+## STS
+![STS Identity](screenshot/sts.png)
 
+## Security Group
+![Create Security Group](screenshot/security_group.png)
 
-Place the image links after the corresponding Quick start steps or in an "Example outputs" section.
+## EC2
+![Create EC2](screenshot/ec2.png)
+## S3 Bucket
+
+![Create S3](screenshot/bucket.png)
+
+## Cleanup
+![Cleanup](screenshot/cleanup.png)
+
 
 ## notes
 - Do NOT hard-code AWS credentials. Use `aws configure`, environment variables, or IAM roles.
