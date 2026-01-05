@@ -1,0 +1,15 @@
+# Keys & secrets
+keys/*.pem
+*.pem
+.env
+
+# Logs
+logs/
+*.log
+
+# OS / editors
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/

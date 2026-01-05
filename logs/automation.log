@@ -1,0 +1,321 @@
+2026-01-05 09:53:07 [INFO] Starting Security Group creation process
+2026-01-05 09:53:12 [INFO] Authorizing inbound rules (SSH & HTTP)
+2026-01-05 09:55:42 [INFO] Creating EC2 key pair
+2026-01-05 09:55:44 [INFO] Launching EC2 instance
+2026-01-05 10:06:14 [INFO] Starting Security Group creation process
+2026-01-05 10:06:18 [ERROR] Failed to create security group
+2026-01-05 10:06:45 [INFO] Starting cleanup of tagged AWS resources
+2026-01-05 10:06:50 [INFO] Deleted Security Group: sg-0cd9025c4821b4956
+2026-01-05 10:06:51 [INFO] Cleanup completed successfully
+2026-01-05 10:07:03 [INFO] Starting Security Group creation process
+2026-01-05 10:07:07 [INFO] Authorizing inbound rules (SSH & HTTP)
+2026-01-05 10:07:50 [INFO] Creating EC2 key pair
+2026-01-05 10:07:50 [INFO] Checking EC2 key pair and local private key
+2026-01-05 10:07:52 [INFO] AWS key pair 'automation-key' already exists
+2026-01-05 10:07:52 [ERROR] Local private key '../keys/automation-key.pem' is missing. Cannot SSH.
+2026-01-05 10:09:50 [INFO] Starting cleanup of tagged AWS resources
+2026-01-05 10:09:58 [INFO] Deleted Security Group: sg-0c42257f906c9fd48
+2026-01-05 10:09:58 [INFO] Cleanup completed successfully
+2026-01-05 10:15:29 [INFO] Starting Security Group creation process
+2026-01-05 10:15:33 [INFO] Authorizing inbound rules (SSH & HTTP)
+2026-01-05 10:16:05 [INFO] Checking EC2 key pair
+2026-01-05 10:16:07 [INFO] AWS key pair 'automation-key'  Creating it now...
+2026-01-05 10:16:09 [INFO] Private key saved locally as ../keys/automation-key.pem
+2026-01-05 10:16:09 [INFO] Launching EC2 instance
+2026-01-05 10:19:06 [INFO] Checking EC2 key pair
+2026-01-05 10:19:08 [INFO] AWS key pair 'automation-key' already exists.
+2026-01-05 10:19:08 [INFO] Local private key '../keys/automation-key.pem' exists. You can SSH into instances.
+2026-01-05 10:19:08 [INFO] Launching EC2 instance
+2026-01-05 10:21:37 [INFO] Checking EC2 key pair
+2026-01-05 10:21:41 [INFO] AWS key pair 'automation-key' already exists.
+2026-01-05 10:21:41 [INFO] Local private key '../keys/automation-key.pem' exists. You can SSH into instances.
+2026-01-05 10:21:41 [INFO] Launching EC2 instance
+2026-01-05 10:23:41 [INFO] Starting Security Group creation process
+2026-01-05 10:23:43 [ERROR] Failed to create security group
+2026-01-05 10:23:57 [INFO] Starting cleanup of tagged AWS resources
+2026-01-05 10:24:02 [INFO] Deleted Security Group: sg-09616255356602792
+2026-01-05 10:24:02 [INFO] Cleanup completed successfully
+2026-01-05 10:24:09 [INFO] Starting Security Group creation process
+2026-01-05 10:24:12 [INFO] Authorizing inbound rules (SSH & HTTP)
+2026-01-05 10:24:17 [INFO] Security Group created successfully
+2026-01-05 10:24:17 [INFO] Security Group ID: sg-0ce1b5af69a3d4a17
+2026-01-05 10:25:13 [INFO] Checking EC2 key pair
+2026-01-05 10:25:15 [INFO] AWS key pair 'automation-key'  Creating it now...
+2026-01-05 10:25:57 [INFO] Checking EC2 key pair
+2026-01-05 10:25:58 [INFO] AWS key pair 'automation-key'  Creating it now...
+2026-01-05 10:26:46 [INFO] Checking EC2 key pair
+2026-01-05 10:26:48 [INFO] AWS key pair 'automation-key'  Creating it now...
+2026-01-05 10:27:08 [INFO] Checking EC2 key pair
+2026-01-05 10:27:09 [INFO] AWS key pair 'automation-key'  Creating it now...
+2026-01-05 10:27:11 [INFO] Private key saved locally as ../keys/automation-key.pem
+2026-01-05 10:27:11 [INFO] Launching EC2 instance
+2026-01-05 10:42:59 [INFO] Starting Security Group creation process
+2026-01-05 10:43:03 [ERROR] Failed to create security group
+2026-01-05 10:43:24 [INFO] Checking EC2 key pair
+2026-01-05 10:43:26 [INFO] AWS key pair 'automation-key' already exists.
+2026-01-05 10:43:26 [INFO] Local private key '../keys/automation-key.pem' exists. You can SSH into instances.
+2026-01-05 10:43:27 [INFO] Launching EC2 instance
+2026-01-05 10:43:29 [INFO] Waiting for instance to reach RUNNING state
+2026-01-05 10:43:48 [INFO] EC2 instance created successfully
+2026-01-05 10:44:00 [INFO] Creating S3 bucket: automation-lab-1767609840
+2026-01-05 10:44:23 [INFO] Creating S3 bucket: automation-lab-1767609863
+2026-01-05 10:52:05 [INFO] Creating S3 bucket: automation-lab-1767610325
+2026-01-05 10:52:10 [INFO] Bucket 'automation-lab-1767610325' created successfully in region eu-west-1.
+2026-01-05 10:52:12 [INFO] Versioning enabled for bucket 'automation-lab-1767610325'.
+2026-01-05 10:52:14 [INFO] Sample file '../assets/welcome.txt' uploaded to bucket 'automation-lab-1767610325'.
+2026-01-05 10:52:14 [INFO] S3 bucket setup completed successfully.
+2026-01-05 10:52:14 [INFO] Bucket Name: automation-lab-1767610325
+2026-01-05 10:55:12 [INFO] Starting cleanup of tagged AWS resources
+2026-01-05 10:55:17 [INFO] Terminated EC2 instances: i-0523d6698296fee6a
+2026-01-05 10:55:21 [INFO] Deleted Security Group: sg-0ce1b5af69a3d4a17
+2026-01-05 10:55:21 [INFO] Cleanup completed successfully
+2026-01-05 11:07:38 [INFO] Starting cleanup of tagged AWS resources
+2026-01-05 11:07:43 [INFO] Terminated EC2 instances: i-0523d6698296fee6a
+2026-01-05 11:07:45 [INFO] Cleanup completed successfully
+[2026-01-05 11:45:50] [ERROR] AWS credentials not configured or invalid for region: eu-west-1
+[2026-01-05 11:47:22] [INFO] Starting Security Group creation process
+[2026-01-05 11:47:22] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-05 11:48:18] [INFO] Starting Security Group creation process
+[2026-01-05 11:48:18] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-05 11:48:22] [INFO] Security Group created: sg-0905bde14baef2e4e
+[2026-01-05 11:48:24] [INFO] Security Group tagged successfully
+[2026-01-05 11:48:24] [INFO] Authorizing port 22 (tcp)...
+[2026-01-05 11:48:27] [INFO] Authorizing port 80 (tcp)...
+[2026-01-05 11:48:29] [INFO] Security Group setup completed successfully
+[2026-01-05 11:48:29] [INFO] Security Group ID: sg-0905bde14baef2e4e
+[2026-01-05 11:51:05] [INFO] Starting EC2 instance creation process
+[2026-01-05 11:51:05] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-05 11:51:07] [INFO] Creating new key pair: automation-key
+[2026-01-05 11:51:07] [ERROR] Failed to create key pair
+[2026-01-05 11:51:43] [INFO] Starting EC2 instance creation process
+[2026-01-05 11:51:43] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-05 11:51:45] [INFO] Creating new key pair: automation-key
+[2026-01-05 11:54:28] [INFO] Starting EC2 instance creation process
+[2026-01-05 11:54:28] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-05 11:54:30] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-05 11:54:30] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-05 11:54:30] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-05 11:54:32] [INFO] Launching EC2 instance...
+[2026-01-05 11:54:35] [INFO] Instance launched: i-016d3f38a0a8e9174
+[2026-01-05 11:54:35] [INFO] Waiting for instance to reach RUNNING state...
+[2026-01-05 11:54:54] [INFO] Instance running successfully
+[2026-01-05 11:54:54] [INFO] EC2 setup completed. Instance: i-016d3f38a0a8e9174, IP: 34.242.186.31
+[2026-01-05 11:56:09] [INFO] Starting S3 bucket creation process
+[2026-01-05 11:56:09] [INFO] Region: eu-west-1, Bucket: automation-lab-1767614167
+[2026-01-05 11:56:10] [INFO] Creating S3 bucket: automation-lab-1767614167
+[2026-01-05 11:56:13] [INFO] Bucket created: automation-lab-1767614167
+[2026-01-05 11:56:14] [INFO] Bucket tagged successfully
+[2026-01-05 11:56:14] [INFO] Enabling versioning...
+[2026-01-05 11:56:16] [INFO] Versioning enabled successfully
+[2026-01-05 11:56:16] [INFO] Enabling encryption...
+[2026-01-05 11:56:18] [INFO] Encryption enabled successfully
+[2026-01-05 11:56:18] [INFO] Blocking public access...
+[2026-01-05 11:56:20] [INFO] Public access blocked
+[2026-01-05 11:56:20] [INFO] Uploading sample file: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../assets/welcome.txt
+[2026-01-05 11:56:21] [INFO] Sample file uploaded successfully
+[2026-01-05 11:56:21] [INFO] S3 bucket setup completed successfully
+[2026-01-05 11:57:32] [INFO] Starting cleanup of AWS resources
+[2026-01-05 11:57:32] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 11:57:32] [INFO] Searching for EC2 instances...
+[2026-01-05 11:57:34] [INFO] Found EC2 instances: i-016d3f38a0a8e9174
+[2026-01-05 11:57:36] [INFO] Terminating instance: i-016d3f38a0a8e9174
+[2026-01-05 11:57:53] [INFO] Starting cleanup of AWS resources
+[2026-01-05 11:57:53] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 11:57:54] [INFO] Searching for EC2 instances...
+[2026-01-05 11:57:55] [INFO] No EC2 instances found with tag Project=AutomationLab
+[2026-01-05 11:57:55] [INFO] Searching for Security Groups...
+[2026-01-05 11:57:57] [INFO] Found Security Groups: sg-0905bde14baef2e4e
+[2026-01-05 11:58:02] [INFO] Waiting for instances to terminate before deleting security groups...
+[2026-01-05 11:58:04] [INFO] Deleted Security Group: sg-0905bde14baef2e4e
+[2026-01-05 11:58:58] [INFO] Starting cleanup of AWS resources
+[2026-01-05 11:58:58] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 11:58:58] [INFO] Searching for EC2 instances...
+[2026-01-05 11:59:00] [INFO] No EC2 instances found with tag Project=AutomationLab
+[2026-01-05 11:59:00] [INFO] Searching for Security Groups...
+[2026-01-05 11:59:02] [INFO] No Security Groups found with tag Project=AutomationLab
+[2026-01-05 11:59:02] [INFO] Searching for S3 buckets...
+[2026-01-05 11:59:09] [INFO] Found S3 buckets:  automation-lab-1767614167
+[2026-01-05 11:59:09] [INFO] Emptying S3 bucket: automation-lab-1767614167
+[2026-01-05 11:59:13] [ERROR] Failed to delete bucket: automation-lab-1767614167
+[2026-01-05 12:00:11] [INFO] Starting cleanup of AWS resources
+[2026-01-05 12:00:11] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 12:00:11] [INFO] Searching for EC2 instances...
+[2026-01-05 12:00:13] [INFO] No EC2 instances found with tag Project=AutomationLab
+[2026-01-05 12:00:13] [INFO] Searching for Security Groups...
+[2026-01-05 12:00:15] [INFO] No Security Groups found with tag Project=AutomationLab
+[2026-01-05 12:00:15] [INFO] Searching for S3 buckets...
+[2026-01-05 12:00:22] [INFO] Found S3 buckets:  automation-lab-1767614167
+[2026-01-05 12:00:22] [INFO] Preparing S3 bucket for deletion: automation-lab-1767614167
+[2026-01-05 12:00:24] [INFO] Removing all objects (including versions) from bucket: automation-lab-1767614167
+[2026-01-05 12:00:31] [INFO] Deleting S3 bucket: automation-lab-1767614167
+[2026-01-05 12:00:33] [ERROR] Failed to delete bucket: automation-lab-1767614167 (may contain protected objects)
+[2026-01-05 12:01:27] [INFO] Starting cleanup of AWS resources
+[2026-01-05 12:01:27] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 12:01:27] [INFO] Searching for EC2 instances...
+[2026-01-05 12:01:28] [INFO] No EC2 instances found with tag Project=AutomationLab
+[2026-01-05 12:01:28] [INFO] Searching for Security Groups...
+[2026-01-05 12:01:30] [INFO] No Security Groups found with tag Project=AutomationLab
+[2026-01-05 12:01:30] [INFO] Searching for S3 buckets...
+[2026-01-05 12:01:37] [INFO] Found S3 buckets:  automation-lab-1767614167
+[2026-01-05 12:01:37] [INFO] Preparing S3 bucket for deletion: automation-lab-1767614167
+[2026-01-05 12:01:39] [INFO] Removing all objects and versions from bucket: automation-lab-1767614167
+[2026-01-05 12:03:49] [INFO] Starting cleanup of AWS resources
+[2026-01-05 12:03:49] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 12:03:49] [INFO] Searching for EC2 instances...
+[2026-01-05 12:03:51] [INFO] No EC2 instances found with tag Project=AutomationLab
+[2026-01-05 12:03:51] [INFO] Searching for Security Groups...
+[2026-01-05 12:03:52] [INFO] No Security Groups found with tag Project=AutomationLab
+[2026-01-05 12:03:53] [INFO] Searching for S3 buckets...
+[2026-01-05 12:04:00] [INFO] Found S3 buckets:  automation-lab-1767614167
+[2026-01-05 12:04:00] [INFO] Preparing S3 bucket for deletion: automation-lab-1767614167
+[2026-01-05 12:04:01] [INFO] Deleting current objects from bucket: automation-lab-1767614167
+[2026-01-05 12:04:03] [INFO] Deleting object versions from bucket: automation-lab-1767614167
+[2026-01-05 12:04:09] [INFO] Deleting S3 bucket: automation-lab-1767614167
+[2026-01-05 12:04:10] [WARN] Bucket still has objects, attempting force empty...
+[2026-01-05 12:04:12] [ERROR] Failed to delete bucket: automation-lab-1767614167 (contains protected/locked objects)
+[2026-01-05 12:05:35] [INFO] Starting cleanup of AWS resources
+[2026-01-05 12:05:35] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 12:05:35] [INFO] Searching for EC2 instances...
+[2026-01-05 12:05:37] [INFO] No EC2 instances found with tag Project=AutomationLab
+[2026-01-05 12:05:37] [INFO] Searching for Security Groups...
+[2026-01-05 12:05:39] [INFO] No Security Groups found with tag Project=AutomationLab
+[2026-01-05 12:05:39] [INFO] Searching for S3 buckets...
+[2026-01-05 12:05:46] [INFO] Found S3 buckets:  automation-lab-1767614167
+[2026-01-05 12:05:47] [INFO] Preparing S3 bucket for deletion: automation-lab-1767614167
+[2026-01-05 12:05:47] [INFO] Removing object protections and locks...
+[2026-01-05 12:05:50] [INFO] Removing legal holds from objects...
+[2026-01-05 12:05:53] [INFO] Deleting objects from bucket: automation-lab-1767614167
+[2026-01-05 12:05:55] [INFO] Deleting object versions...
+[2026-01-05 12:06:02] [INFO] Deleting S3 bucket: automation-lab-1767614167
+[2026-01-05 12:06:03] [WARN] Bucket still has content, forcing empty...
+[2026-01-05 12:06:10] [ERROR] Bucket has remaining objects: None
+[2026-01-05 12:50:26] [ERROR] AWS credentials not configured or invalid for region: eu-west-1
+[2026-01-05 12:51:08] [INFO] Starting cleanup of AWS resources
+[2026-01-05 12:51:09] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 12:51:09] [INFO] Searching for EC2 instances...
+[2026-01-05 12:51:10] [INFO] No EC2 instances found with tag Project=AutomationLab
+[2026-01-05 12:51:10] [INFO] Searching for Security Groups...
+[2026-01-05 12:51:12] [INFO] No Security Groups found with tag Project=AutomationLab
+[2026-01-05 12:51:12] [INFO] Searching for S3 buckets...
+[2026-01-05 12:51:20] [INFO] Found S3 buckets:  automation-lab-1767614167
+[2026-01-05 12:51:20] [INFO] Preparing S3 bucket for deletion: automation-lab-1767614167
+[2026-01-05 12:51:20] [INFO] Removing object protections and locks...
+[2026-01-05 12:51:23] [INFO] Removing legal holds from objects...
+[2026-01-05 12:51:25] [INFO] Deleting objects from bucket: automation-lab-1767614167
+[2026-01-05 12:51:26] [INFO] Deleting object versions...
+[2026-01-05 12:51:30] [INFO] Deleting S3 bucket: automation-lab-1767614167
+[2026-01-05 12:51:32] [INFO] Deleted S3 bucket: automation-lab-1767614167
+[2026-01-05 12:53:04] [INFO] Starting Security Group creation process
+[2026-01-05 12:53:04] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-05 12:53:07] [INFO] Security Group created: sg-0ed03f2aef048a43e
+[2026-01-05 12:53:09] [INFO] Security Group tagged successfully
+[2026-01-05 12:53:10] [INFO] Authorizing port 22 (tcp)...
+[2026-01-05 12:53:13] [INFO] Authorizing port 80 (tcp)...
+[2026-01-05 12:53:15] [INFO] Security Group setup completed successfully
+[2026-01-05 12:53:15] [INFO] Security Group ID: sg-0ed03f2aef048a43e
+[2026-01-05 12:53:42] [INFO] Starting EC2 instance creation process
+[2026-01-05 12:53:42] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-05 12:53:44] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-05 12:53:44] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-05 12:53:44] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-05 12:53:45] [INFO] Launching EC2 instance...
+[2026-01-05 12:53:48] [INFO] Instance launched: i-03b190ea136686042
+[2026-01-05 12:53:48] [INFO] Waiting for instance to reach RUNNING state...
+[2026-01-05 12:54:07] [INFO] Instance running successfully
+[2026-01-05 12:54:07] [INFO] EC2 setup completed. Instance: i-03b190ea136686042, IP: 46.137.48.118
+[2026-01-05 12:54:23] [INFO] Starting S3 bucket creation process
+[2026-01-05 12:54:23] [INFO] Region: eu-west-1, Bucket: automation-lab-1767617662
+[2026-01-05 12:54:25] [INFO] Creating S3 bucket: automation-lab-1767617662
+[2026-01-05 12:54:27] [INFO] Bucket created: automation-lab-1767617662
+[2026-01-05 12:54:29] [INFO] Bucket tagged successfully
+[2026-01-05 12:54:29] [INFO] Enabling versioning...
+[2026-01-05 12:54:31] [INFO] Versioning enabled successfully
+[2026-01-05 12:54:31] [INFO] Enabling encryption...
+[2026-01-05 12:54:32] [INFO] Encryption enabled successfully
+[2026-01-05 12:54:32] [INFO] Blocking public access...
+[2026-01-05 12:54:34] [INFO] Public access blocked
+[2026-01-05 12:54:34] [INFO] Uploading sample file: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../assets/welcome.txt
+[2026-01-05 12:54:35] [INFO] Sample file uploaded successfully
+[2026-01-05 12:54:35] [INFO] S3 bucket setup completed successfully
+[2026-01-05 12:55:31] [INFO] Starting cleanup of AWS resources
+[2026-01-05 12:55:31] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 12:55:31] [INFO] Searching for EC2 instances...
+[2026-01-05 12:55:33] [INFO] Found EC2 instances: i-03b190ea136686042
+[2026-01-05 12:55:35] [INFO] Terminating instance: i-03b190ea136686042
+[2026-01-05 12:56:55] [INFO] Starting cleanup of AWS resources
+[2026-01-05 12:56:55] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 12:56:55] [INFO] Searching for EC2 instances...
+[2026-01-05 12:56:57] [INFO] No EC2 instances found with tag Project=AutomationLab
+[2026-01-05 12:56:57] [INFO] Searching for Security Groups...
+[2026-01-05 12:56:59] [INFO] Found Security Groups: sg-0ed03f2aef048a43e
+[2026-01-05 12:57:04] [INFO] Waiting for instances to terminate before deleting security groups...
+[2026-01-05 12:57:06] [INFO] Deleted Security Group: sg-0ed03f2aef048a43e
+[2026-01-05 12:59:55] [INFO] Starting cleanup of AWS resources
+[2026-01-05 12:59:55] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 12:59:55] [INFO] Searching for EC2 instances...
+[2026-01-05 12:59:57] [INFO] No EC2 instances found with tag Project=AutomationLab
+[2026-01-05 12:59:57] [INFO] Searching for Security Groups...
+[2026-01-05 12:59:59] [INFO] No Security Groups found with tag Project=AutomationLab
+[2026-01-05 12:59:59] [INFO] Searching for S3 buckets...
+[2026-01-05 13:00:07] [INFO] Found S3 buckets:  automation-lab-1767617662
+[2026-01-05 13:00:07] [INFO] Processing S3 bucket: automation-lab-1767617662
+[2026-01-05 13:00:10] [INFO] Emptying bucket contents...
+[2026-01-05 13:00:14] [WARN] Could not delete bucket automation-lab-1767617662 (may require manual deletion)
+[2026-01-05 13:00:14] [INFO] Searching for EC2 Key Pairs...
+[2026-01-05 13:00:17] [INFO] Deleted Key Pair: automation-key
+[2026-01-05 13:07:56] [INFO] Starting Security Group creation process
+[2026-01-05 13:07:56] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-05 13:08:00] [INFO] Security Group created: sg-09cfdb5a3b9ec0ded
+[2026-01-05 13:08:02] [INFO] Security Group tagged successfully
+[2026-01-05 13:08:02] [INFO] Authorizing port 22 (tcp)...
+[2026-01-05 13:08:05] [INFO] Authorizing port 80 (tcp)...
+[2026-01-05 13:08:07] [INFO] Security Group setup completed successfully
+[2026-01-05 13:08:07] [INFO] Security Group ID: sg-09cfdb5a3b9ec0ded
+[2026-01-05 13:09:57] [INFO] Starting EC2 instance creation process
+[2026-01-05 13:09:57] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-05 13:09:59] [INFO] Creating new key pair: automation-key
+[2026-01-05 13:12:13] [INFO] Starting EC2 instance creation process
+[2026-01-05 13:12:14] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-05 13:12:15] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-05 13:12:15] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-05 13:12:15] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-05 13:12:17] [INFO] Launching EC2 instance...
+[2026-01-05 13:12:20] [INFO] Instance launched: i-0540627d571ca242e
+[2026-01-05 13:12:20] [INFO] Waiting for instance to reach RUNNING state...
+[2026-01-05 13:12:40] [INFO] Instance running successfully
+[2026-01-05 13:12:40] [INFO] EC2 setup completed. Instance: i-0540627d571ca242e, IP: 34.246.175.243
+[2026-01-05 13:12:47] [INFO] Starting S3 bucket creation process
+[2026-01-05 13:12:47] [INFO] Region: eu-west-1, Bucket: automation-lab-1767618766
+[2026-01-05 13:12:49] [INFO] Creating S3 bucket: automation-lab-1767618766
+[2026-01-05 13:12:51] [INFO] Bucket created: automation-lab-1767618766
+[2026-01-05 13:12:53] [INFO] Bucket tagged successfully
+[2026-01-05 13:12:53] [INFO] Enabling versioning...
+[2026-01-05 13:12:55] [INFO] Versioning enabled successfully
+[2026-01-05 13:12:55] [INFO] Enabling encryption...
+[2026-01-05 13:12:57] [INFO] Encryption enabled successfully
+[2026-01-05 13:12:57] [INFO] Blocking public access...
+[2026-01-05 13:12:59] [INFO] Public access blocked
+[2026-01-05 13:12:59] [INFO] Uploading sample file: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../assets/welcome.txt
+[2026-01-05 13:13:01] [INFO] Sample file uploaded successfully
+[2026-01-05 13:13:01] [INFO] S3 bucket setup completed successfully
+[2026-01-05 13:14:22] [INFO] Starting cleanup of AWS resources
+[2026-01-05 13:14:22] [INFO] Region: eu-west-1, Tag: Project=AutomationLab
+[2026-01-05 13:14:22] [INFO] Searching for EC2 instances...
+[2026-01-05 13:14:24] [INFO] Found EC2 instances: i-0540627d571ca242e
+[2026-01-05 13:14:26] [INFO] Terminating instance: i-0540627d571ca242e
+[0;34m[2026-01-05 13:23:17] [INFO] Starting cleanup of AWS resources[0m
+[0;34m[2026-01-05 13:23:18] [INFO] Region: eu-west-1, Tag: Project=AutomationLab[0m
+[0;34m[2026-01-05 13:23:18] [INFO] Searching for EC2 instances tagged Project=AutomationLab...[0m
+[0;34m[2026-01-05 13:23:19] [INFO] No EC2 instances found with tag Project=AutomationLab[0m
+[0;34m[2026-01-05 13:23:20] [INFO] Searching for Security Groups tagged Project=AutomationLab...[0m
+[0;34m[2026-01-05 13:23:27] [INFO] Deleting Security Group: sg-09cfdb5a3b9ec0ded[0m
+[0;32m[2026-01-05 13:23:29] [SUCCESS] Deleted Security Group: sg-09cfdb5a3b9ec0ded[0m
+[0;34m[2026-01-05 13:23:29] [INFO] Searching for S3 buckets tagged Project=AutomationLab...[0m
+[0;34m[2026-01-05 13:23:38] [INFO] Processing bucket: automation-lab-1767617662[0m
+[0;34m[2026-01-05 13:23:49] [INFO] Deleting object versions and delete markers for automation-lab-1767617662[0m
+[1;33m[2026-01-05 13:23:59] [WARN] Could not delete bucket automation-lab-1767617662 automatically[0m
+[0;34m[2026-01-05 13:23:59] [INFO] Processing bucket: automation-lab-1767618766[0m
+[0;34m[2026-01-05 13:24:10] [INFO] Deleting object versions and delete markers for automation-lab-1767618766[0m
+[1;33m[2026-01-05 13:24:20] [WARN] Could not delete bucket automation-lab-1767618766 automatically[0m
+[0;34m[2026-01-05 13:24:20] [INFO] Searching for EC2 key pairs...[0m
+[0;32m[2026-01-05 13:24:24] [SUCCESS] Deleted Key Pair: automation-key[0m
