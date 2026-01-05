@@ -58,13 +58,13 @@ chmod +x create_security_group.sh create_ec2.sh create_s3_bucket.sh cleanup_reso
 2. (Optional) Set AWS profile/region:
 ```bash
 export AWS_PROFILE=default
-export AWS_REGION=us-east-1
+export AWS_REGION=eu-west-1
 ```
 3. Run scripts (examples):
 ```bash
-./create_security_group.sh --name devops-sg
-./create_ec2.sh --key-name automationlab-key --sg-ids sg-0123456789abcdef0
-./create_s3_bucket.sh --prefix automationlab-bucket
+./create_security_group.sh
+./create_ec2.sh --key-name 
+./create_s3_bucket.sh
 ```
 4. Verify outputs printed by each script.
 
@@ -72,11 +72,11 @@ export AWS_REGION=us-east-1
 Save screenshots in `docs/screenshots/` with meaningful names. Reference them in this README using Markdown:
 
 ```markdown
-![STS Identity](docs/screenshots/sts_identity.png)
-![Create Security Group](docs/screenshots/create_sg.png)
-![Create EC2](docs/screenshots/create_ec2.png)
-![Create S3](docs/screenshots/create_s3.png)
-![Cleanup](docs/screenshots/cleanup.png)
+![STS Identity](screenshot/sts.png)
+![Create Security Group](screenshot/security_group.png)
+![Create EC2](screenshot/ec2.png)
+![Create S3](screenshot/bucket.png)
+![Cleanup](screenshot/cleanup.png)
 ```
 
 Place the image links after the corresponding Quick start steps or in an "Example outputs" section.
@@ -87,3 +87,4 @@ Place the image links after the corresponding Quick start steps or in an "Exampl
 
 ## Want the scripts?
 I can generate the example scripts with safe defaults and comments if you want — tell me and I’ll add them here.
+
