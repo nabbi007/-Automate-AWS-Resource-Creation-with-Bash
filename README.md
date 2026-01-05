@@ -71,13 +71,13 @@ export AWS_REGION=eu-west-1
 ## Where to add screenshots
 Save screenshots in `docs/screenshots/` with meaningful names. Reference them in this README using Markdown:
 
-```markdown
-![STS Identity](./screenshot/sts.png)
+
+![STS Identity](screenshot/sts.png)
 ![Create Security Group](screenshot/security_group.png)
 ![Create EC2](screenshot/ec2.png)
 ![Create S3](screenshot/bucket.png)
 ![Cleanup](screenshot/cleanup.png)
-```
+
 
 Place the image links after the corresponding Quick start steps or in an "Example outputs" section.
 
@@ -86,6 +86,7 @@ Place the image links after the corresponding Quick start steps or in an "Exampl
 - Use least-privilege IAM policies and tag resources (`Project=AutomationLab`) so cleanup is safe.
 - Be mindful of the region, because their ami varies
   
+
 
 
 
