@@ -70,17 +70,6 @@ export AWS_REGION=eu-west-1
 
 ## Screenshot of Execution
 
-
-screenshot/security_group.png
-
-
-screenshot/ec2.png
-
-screenshot/bucket.png
-
-
-screenshot/sts.png
-
 ## Cleanup
 screenshot/cleanup.png
 
@@ -105,6 +94,7 @@ screenshot/cleanup.png
 - Use least-privilege IAM policies and tag resources (`Project=AutomationLab`) so cleanup is safe.
 - Be mindful of the region, because their ami varies
   
+
 
 
 
