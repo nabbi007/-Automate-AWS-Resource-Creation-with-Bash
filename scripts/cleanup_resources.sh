@@ -57,15 +57,16 @@ safe_run() { # run command, log on failure but continue
 }
 
 delete_ec2_instances() {
-  log "Searching for EC2 instances tagged $TAG_KEY=$TAG_VALUE..."
+  log "Searching for EC2 instances created by automation scripts..."
   local ids
+  # Only delete instances with automation-key naming pattern AND AutomationLab tag
   ids=$(aws ec2 describe-instances --region "$REGION" \
-    --filters "Name=tag:$TAG_KEY,Values=$TAG_VALUE" "Name=instance-state-name,Values=pending,running,stopping,stopped" \
+    --filters "Name=tag:$TAG_KEY,Values=$TAG_VALUE" "Name=tag:Name,Values=*automation-key*" "Name=instance-state-name,Values=pending,running,stopping,stopped" \
     --query "Reservations[].Instances[].InstanceId" --output text 2>/dev/null || true)
 
-  if [[ -z "$ids" ]]; then
-    log "No EC2 instances found with tag $TAG_KEY=$TAG_VALUE"
-    return
+  if [[ -z "$ids" ]] || [[ "$ids" == "None" ]]; then
+    log "No EC2 instances found created by automation scripts "
+    return 0
   fi
 
   for id in $ids; do
@@ -73,7 +74,17 @@ delete_ec2_instances() {
       log "[DRY RUN] Would terminate instance: $id"
       continue
     fi
-    log "Terminating instance: $id"
+    # Check current state before attempting termination
+    local state
+    state=$(aws ec2 describe-instances --instance-ids "$id" --region "$REGION" \
+      --query "Reservations[0].Instances[0].State.Name" --output text 2>/dev/null || echo "unknown")
+    
+    if [[ "$state" == "terminated" ]] || [[ "$state" == "terminating" ]]; then
+      log "Instance $id already terminated/terminating (idempotent: skipping)"
+      continue
+    fi
+    
+    log "Terminating instance: $id (current state: $state)"
     if aws ec2 terminate-instances --instance-ids "$id" --region "$REGION" &>/dev/null; then
       RESOURCES_DELETED=$((RESOURCES_DELETED+1))
       log "Waiting for instance $id to terminate..."
@@ -87,14 +98,16 @@ delete_ec2_instances() {
 }
 
 delete_security_groups() {
-  log "Searching for Security Groups tagged $TAG_KEY=$TAG_VALUE..."
+  log "Searching for Security Groups created by automation scripts..."
   local sgs
+  # Only delete security groups with devops-sg naming pattern AND AutomationLab tag
   sgs=$(aws ec2 describe-security-groups --region "$REGION" \
-    --filters "Name=tag:$TAG_KEY,Values=$TAG_VALUE" --query "SecurityGroups[].GroupId" --output text 2>/dev/null || true)
+    --filters "Name=tag:$TAG_KEY,Values=$TAG_VALUE" "Name=group-name,Values=devops-sg" \
+    --query "SecurityGroups[].GroupId" --output text 2>/dev/null || true)
 
-  if [[ -z "$sgs" ]]; then
-    log "No Security Groups found with tag $TAG_KEY=$TAG_VALUE"
-    return
+  if [[ -z "$sgs" ]] || [[ "$sgs" == "None" ]]; then
+    log "No Security Groups found created by automation scripts (idempotent: already clean)"
+    return 0
   fi
 
   # Wait a short while for ENIs to be released
@@ -105,6 +118,12 @@ delete_security_groups() {
       log "[DRY RUN] Would delete Security Group: $sg"
       continue
     fi
+    # Check if security group still exists
+    if ! aws ec2 describe-security-groups --group-ids "$sg" --region "$REGION" &>/dev/null; then
+      log "Security Group $sg already deleted (idempotent: skipping)"
+      continue
+    fi
+    
     log "Deleting Security Group: $sg"
     if aws ec2 delete-security-group --group-id "$sg" --region "$REGION" &>/dev/null; then
       RESOURCES_DELETED=$((RESOURCES_DELETED+1))
@@ -174,6 +193,12 @@ empty_and_delete_bucket() {
     fi
   done
 
+  # Check if bucket still exists before final delete attempt
+  if ! aws s3api head-bucket --bucket "$bucket" --region "$REGION" 2>/dev/null; then
+    log "Bucket $bucket already deleted (idempotent: skipping final delete)"
+    return 0
+  fi
+  
   # Final delete attempt
   if aws s3api delete-bucket --bucket "$bucket" --region "$REGION" 2>/dev/null; then
     success "Deleted S3 bucket: $bucket"
@@ -185,21 +210,24 @@ empty_and_delete_bucket() {
 }
 
 delete_s3_buckets() {
-  log "Searching for S3 buckets tagged $TAG_KEY=$TAG_VALUE..."
+  log "Searching for S3 buckets created by automation scripts..."
   local all_buckets
   all_buckets=$(aws s3api list-buckets --query 'Buckets[].Name' --output text 2>/dev/null || true)
   local match=()
 
   for b in $all_buckets; do
-    tags=$(aws s3api get-bucket-tagging --bucket "$b" --region "$REGION" 2>/dev/null || true)
-    if echo "$tags" | grep -q "$TAG_VALUE" 2>/dev/null; then
-      match+=("$b")
+    # Only match buckets with automation-lab naming pattern
+    if [[ "$b" == automation-lab-* ]]; then
+      tags=$(aws s3api get-bucket-tagging --bucket "$b" --region "$REGION" 2>/dev/null || true)
+      if echo "$tags" | grep -q "$TAG_VALUE" 2>/dev/null; then
+        match+=("$b")
+      fi
     fi
   done
 
   if [[ ${#match[@]} -eq 0 ]]; then
-    log "No S3 buckets found with tag $TAG_KEY=$TAG_VALUE"
-    return
+    log "No S3 buckets found created by automation scripts (idempotent: already clean)"
+    return 0
   fi
 
   for bucket in "${match[@]}"; do
@@ -212,14 +240,26 @@ delete_s3_buckets() {
 }
 
 delete_key_pairs() {
-  log "Searching for EC2 key pairs..."
+  log "Searching for EC2 key pairs created by automation scripts..."
   local keys
   keys=$(aws ec2 describe-key-pairs --region "$REGION" --query 'KeyPairs[].KeyName' --output text 2>/dev/null || true)
+  if [[ -z "$keys" ]] || [[ "$keys" == "None" ]]; then
+    log "No key pairs found created by automation scripts (idempotent: already clean)"
+    return 0
+  fi
+  
   for k in $keys; do
-    if [[ "$k" == *automation* ]]; then
+    # Only delete key pairs with exact automation-key naming pattern
+    if [[ "$k" == "automation-key" ]]; then
       if [[ "$DRY_RUN" == "true" ]]; then
         log "[DRY RUN] Would delete key pair: $k"
       else
+        # Check if key pair still exists
+        if ! aws ec2 describe-key-pairs --key-names "$k" --region "$REGION" &>/dev/null; then
+          log "Key pair $k already deleted (idempotent: skipping)"
+          continue
+        fi
+        
         if aws ec2 delete-key-pair --key-name "$k" --region "$REGION" &>/dev/null; then
           success "Deleted Key Pair: $k"
           RESOURCES_DELETED=$((RESOURCES_DELETED+1))

@@ -55,7 +55,7 @@ if aws ec2 describe-key-pairs --key-names "$KEY_NAME" --region "$REGION" &>/dev/
     log "INFO" "Local private key exists: $KEY_FILE"
     chmod 400 "$KEY_FILE" 2>/dev/null || true
   else
-    log "WARN" "Local private key missing: $KEY_FILE"
+    log "WARN" "Local private key missing: $KEY_FILE (key pair exists in AWS but not locally)"
   fi
 else
   log "INFO" "Creating new key pair: $KEY_NAME"
@@ -94,34 +94,51 @@ if ! aws ec2 describe-images --image-ids "$AMI_ID" --region "$REGION" &>/dev/nul
   error_exit "AMI not found: $AMI_ID in region $REGION"
 fi
 
-# Launch EC2 instance
-log "INFO" "Launching EC2 instance..."
+# Check if instance with same name already exists and is running
+EXISTING_ID=$(aws ec2 describe-instances --region "$REGION" \
+  --filters "Name=tag:Name,Values=$KEY_NAME-instance" "Name=instance-state-name,Values=pending,running,stopping,stopped" \
+  --query "Reservations[0].Instances[0].InstanceId" --output text 2>/dev/null || echo "None")
 
-INSTANCE_ID=$(aws ec2 run-instances \
-  --image-id "$AMI_ID" \
-  --instance-type "$INSTANCE_TYPE" \
-  --key-name "$KEY_NAME" \
-  --region "$REGION" \
-  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$KEY_NAME-instance},{Key=Project,Value=AutomationLab},{Key=CreatedDate,Value=$(date -u +'%Y-%m-%d')}]" \
-  --query 'Instances[0].InstanceId' \
-  --output text 2>&1) || error_exit "Failed to launch instance"
+if [[ "$EXISTING_ID" != "None" ]] && [[ -n "$EXISTING_ID" ]]; then
+  log "INFO" "EC2 instance with name '$KEY_NAME-instance' already exists: $EXISTING_ID (idempotent: skipping creation)"
+  INSTANCE_ID="$EXISTING_ID"
+  
+  # Get existing instance details
+  PUBLIC_IP=$(aws ec2 describe-instances \
+    --instance-ids "$INSTANCE_ID" \
+    --region "$REGION" \
+    --query 'Reservations[0].Instances[0].PublicIpAddress' \
+    --output text 2>/dev/null) || PUBLIC_IP="N/A"
+else
+  # Launch EC2 instance
+  log "INFO" "Launching EC2 instance..."
 
-log "INFO" "Instance launched: $INSTANCE_ID"
+  INSTANCE_ID=$(aws ec2 run-instances \
+    --image-id "$AMI_ID" \
+    --instance-type "$INSTANCE_TYPE" \
+    --key-name "$KEY_NAME" \
+    --region "$REGION" \
+    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$KEY_NAME-instance},{Key=Project,Value=AutomationLab},{Key=CreatedDate,Value=$(date -u +'%Y-%m-%d')}]" \
+    --query 'Instances[0].InstanceId' \
+    --output text 2>&1) || error_exit "Failed to launch instance"
 
-# Wait for instance to reach running state
-log "INFO" "Waiting for instance to reach RUNNING state..."
-if ! aws ec2 wait instance-running --instance-ids "$INSTANCE_ID" --region "$REGION" 2>/dev/null; then
-  error_exit "Instance failed to start within timeout"
+  log "INFO" "Instance launched: $INSTANCE_ID"
+
+  # Wait for instance to reach running state
+  log "INFO" "Waiting for instance to reach RUNNING state..."
+  if ! aws ec2 wait instance-running --instance-ids "$INSTANCE_ID" --region "$REGION" 2>/dev/null; then
+    error_exit "Instance failed to start within timeout"
+  fi
+
+  # Get public IP
+  PUBLIC_IP=$(aws ec2 describe-instances \
+    --instance-ids "$INSTANCE_ID" \
+    --region "$REGION" \
+    --query 'Reservations[0].Instances[0].PublicIpAddress' \
+    --output text 2>/dev/null) || PUBLIC_IP="N/A"
+
+  log "INFO" "Instance running successfully"
 fi
-
-# Get public IP
-PUBLIC_IP=$(aws ec2 describe-instances \
-  --instance-ids "$INSTANCE_ID" \
-  --region "$REGION" \
-  --query 'Reservations[0].Instances[0].PublicIpAddress' \
-  --output text 2>/dev/null) || PUBLIC_IP="N/A"
-
-log "INFO" "Instance running successfully"
 
 echo ""
 echo "============================================================"

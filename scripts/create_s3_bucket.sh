@@ -52,8 +52,32 @@ fi
 
 # Check if bucket already exists
 if aws s3api head-bucket --bucket "$BUCKET_NAME" --region "$REGION" 2>/dev/null; then
-  log "WARN" "S3 bucket '$BUCKET_NAME' already exists"
+  log "INFO" "S3 bucket '$BUCKET_NAME' already exists (idempotent: skipping creation)"
   BUCKET_ID="$BUCKET_NAME"
+  
+  # Ensure existing bucket has proper configuration
+  log "INFO" "Verifying bucket configuration..."
+  
+  # Check and enable versioning if not already enabled
+  versioning=$(aws s3api get-bucket-versioning --bucket "$BUCKET_NAME" --region "$REGION" --query 'Status' --output text 2>/dev/null || echo "None")
+  if [[ "$versioning" != "Enabled" ]]; then
+    log "INFO" "Enabling versioning on existing bucket..."
+    aws s3api put-bucket-versioning --bucket "$BUCKET_NAME" --region "$REGION" \
+      --versioning-configuration Status=Enabled 2>&1 || log "WARN" "Failed to enable versioning"
+  fi
+  
+  # Check and enable encryption if not already enabled
+  if ! aws s3api get-bucket-encryption --bucket "$BUCKET_NAME" --region "$REGION" &>/dev/null; then
+    log "INFO" "Enabling encryption on existing bucket..."
+    aws s3api put-bucket-encryption --bucket "$BUCKET_NAME" --region "$REGION" \
+      --server-side-encryption-configuration '{
+        "Rules": [{
+          "ApplyServerSideEncryptionByDefault": {
+            "SSEAlgorithm": "AES256"
+          }
+        }]
+      }' 2>&1 || log "WARN" "Failed to enable encryption"
+  fi
 else
   log "INFO" "Creating S3 bucket: $BUCKET_NAME"
   
@@ -76,44 +100,48 @@ else
     error_exit "Failed to tag bucket"
   
   log "INFO" "Bucket tagged successfully"
+  
+  # Enable versioning
+  log "INFO" "Enabling versioning..."
+  aws s3api put-bucket-versioning --bucket "$BUCKET_NAME" --region "$REGION" \
+    --versioning-configuration Status=Enabled 2>&1 || \
+    error_exit "Failed to enable versioning"
+
+  log "INFO" "Versioning enabled successfully"
+
+  # Enable server-side encryption
+  log "INFO" "Enabling encryption..."
+  aws s3api put-bucket-encryption --bucket "$BUCKET_NAME" --region "$REGION" \
+    --server-side-encryption-configuration '{
+      "Rules": [{
+        "ApplyServerSideEncryptionByDefault": {
+          "SSEAlgorithm": "AES256"
+        }
+      }]
+    }' 2>&1 || error_exit "Failed to enable encryption"
+
+  log "INFO" "Encryption enabled successfully"
+
+  # Block public access
+  log "INFO" "Blocking public access..."
+  aws s3api put-public-access-block --bucket "$BUCKET_NAME" --region "$REGION" \
+    --public-access-block-configuration \
+    "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true" 2>&1 || \
+    error_exit "Failed to block public access"
+
+  log "INFO" "Public access blocked"
 fi
 
-# Enable versioning
-log "INFO" "Enabling versioning..."
-aws s3api put-bucket-versioning --bucket "$BUCKET_NAME" --region "$REGION" \
-  --versioning-configuration Status=Enabled 2>&1 || \
-  error_exit "Failed to enable versioning"
-
-log "INFO" "Versioning enabled successfully"
-
-# Enable server-side encryption
-log "INFO" "Enabling encryption..."
-aws s3api put-bucket-encryption --bucket "$BUCKET_NAME" --region "$REGION" \
-  --server-side-encryption-configuration '{
-    "Rules": [{
-      "ApplyServerSideEncryptionByDefault": {
-        "SSEAlgorithm": "AES256"
-      }
-    }]
-  }' 2>&1 || error_exit "Failed to enable encryption"
-
-log "INFO" "Encryption enabled successfully"
-
-# Block public access
-log "INFO" "Blocking public access..."
-aws s3api put-public-access-block --bucket "$BUCKET_NAME" --region "$REGION" \
-  --public-access-block-configuration \
-  "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true" 2>&1 || \
-  error_exit "Failed to block public access"
-
-log "INFO" "Public access blocked"
-
-# Upload sample file if exists
+# Upload sample file if exists (idempotent check)
 if [[ -f "$SAMPLE_FILE" ]]; then
-  log "INFO" "Uploading sample file: $SAMPLE_FILE"
-  aws s3 cp "$SAMPLE_FILE" "s3://$BUCKET_NAME/welcome.txt" --region "$REGION" 2>&1 || \
-    error_exit "Failed to upload sample file"
-  log "INFO" "Sample file uploaded successfully"
+  if aws s3api head-object --bucket "$BUCKET_NAME" --key "welcome.txt" --region "$REGION" &>/dev/null; then
+    log "INFO" "Sample file already exists in bucket"
+  else
+    log "INFO" "Uploading sample file: $SAMPLE_FILE"
+    aws s3 cp "$SAMPLE_FILE" "s3://$BUCKET_NAME/welcome.txt" --region "$REGION" 2>&1 || \
+      error_exit "Failed to upload sample file"
+    log "INFO" "Sample file uploaded successfully"
+  fi
 else
   log "WARN" "Sample file not found: $SAMPLE_FILE"
 fi

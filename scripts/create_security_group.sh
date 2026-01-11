@@ -45,16 +45,15 @@ log "INFO" "Starting Security Group creation process"
 log "INFO" "Region: $REGION, Name: $SG_NAME"
 
 # Check if SG already exists
-if SG_ID=$(aws ec2 describe-security-groups --region "$REGION" \
+EXISTING_SG=$(aws ec2 describe-security-groups --region "$REGION" \
   --filters "Name=group-name,Values=$SG_NAME" \
-  --query 'SecurityGroups[0].GroupId' --output text 2>/dev/null); then
-  if [[ "$SG_ID" != "None" ]] && [[ -n "$SG_ID" ]]; then
-    log "WARN" "Security group '$SG_NAME' already exists: $SG_ID"
-  fi
-fi
+  --query 'SecurityGroups[0].GroupId' --output text 2>/dev/null || echo "None")
 
-# Create security group if not exists
-if [[ -z "$SG_ID" ]] || [[ "$SG_ID" == "None" ]]; then
+if [[ "$EXISTING_SG" != "None" ]] && [[ -n "$EXISTING_SG" ]]; then
+  log "INFO" "Security group '$SG_NAME' already exists: $EXISTING_SG (idempotent: skipping creation)"
+  SG_ID="$EXISTING_SG"
+else
+  # Create security group
   create_args=("--group-name" "$SG_NAME" "--description" "$DESCRIPTION" "--region" "$REGION")
   [[ -n "$VPC_ID" ]] && create_args+=("--vpc-id" "$VPC_ID")
   
@@ -72,13 +71,13 @@ if [[ -z "$SG_ID" ]] || [[ "$SG_ID" == "None" ]]; then
   log "INFO" "Security Group tagged successfully"
 fi
 
-# Authorize inbound rules (only if not already authorized)
+# Authorize inbound rules 
 for port in 22 80; do
   protocol="tcp"
   if aws ec2 describe-security-groups --group-ids "$SG_ID" --region "$REGION" \
     --query "SecurityGroups[0].IpPermissions[?FromPort==$port && IpProtocol=='$protocol']" \
     --output text 2>/dev/null | grep -q "tcp"; then
-    log "WARN" "Rule for port $port already exists"
+    log "INFO" "Rule for port $port already exists "
     continue
   fi
   
@@ -86,6 +85,7 @@ for port in 22 80; do
   aws ec2 authorize-security-group-ingress --group-id "$SG_ID" \
     --protocol "$protocol" --port "$port" --cidr 0.0.0.0/0 \
     --region "$REGION" &>/dev/null || error_exit "Failed to authorize port $port"
+  log "INFO" "Port $port authorized successfully"
 done
 
 log "INFO" "Security Group setup completed successfully"
