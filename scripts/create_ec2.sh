@@ -105,7 +105,7 @@ EXISTING_ID=$(aws ec2 describe-instances --region "$REGION" \
   --query "Reservations[0].Instances[0].InstanceId" --output text 2>/dev/null || echo "None")
 
 if [[ "$EXISTING_ID" != "None" ]] && [[ -n "$EXISTING_ID" ]]; then
-  log "INFO" "EC2 instance with name '$KEY_NAME-instance' already exists: $EXISTING_ID (idempotent: skipping creation)"
+  log "INFO" "EC2 instance with name '$KEY_NAME-instance' already exists: $EXISTING_ID "
   INSTANCE_ID="$EXISTING_ID"
   
   # Get existing instance details

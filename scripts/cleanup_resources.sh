@@ -262,7 +262,7 @@ delete_key_pairs() {
     
     # Check if key pair still exists
     if ! aws ec2 describe-key-pairs --key-names "$key_name" --region "${region:-$REGION}" &>/dev/null; then
-      log "Key pair $key_name already deleted (idempotent: skipping)"
+      log "Key pair $key_name already deleted"
       continue
     fi
     
