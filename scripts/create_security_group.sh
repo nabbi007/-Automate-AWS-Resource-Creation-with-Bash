@@ -7,6 +7,7 @@ set -euo pipefail
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly LOG_DIR="${SCRIPT_DIR}/../logs"
 readonly LOG_FILE="${LOG_DIR}/automation.log"
+readonly RESOURCES_FILE="${SCRIPT_DIR}/../.created_resources.txt"
 
 REGION="${AWS_REGION:-eu-west-1}"
 SG_NAME="${SG_NAME:-devops-sg}"
@@ -64,11 +65,14 @@ else
   
   # Tag the security group
   aws ec2 create-tags --resources "$SG_ID" --region "$REGION" \
-    --tags Key=Name,Value="$SG_NAME" Key=Project,Value=AutomationLab \
-    Key=CreatedDate,Value="$(date -u +'%Y-%m-%d')" 2>&1 || \
+    --tags Key=Name,Value="$SG_NAME" Key=Project,Value=AutomationLab 2>&1 || \
     error_exit "Failed to tag security group"
   
   log "INFO" "Security Group tagged successfully"
+  
+  # Save resource ID for cleanup
+  echo "SECURITY_GROUP:$SG_ID:$REGION" >> "$RESOURCES_FILE"
+  log "INFO" "Resource ID saved for cleanup"
 fi
 
 # Authorize inbound rules 

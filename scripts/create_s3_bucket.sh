@@ -8,6 +8,7 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly LOG_DIR="${SCRIPT_DIR}/../logs"
 readonly LOG_FILE="${LOG_DIR}/automation.log"
 readonly ASSETS_DIR="${SCRIPT_DIR}/../assets"
+readonly RESOURCES_FILE="${SCRIPT_DIR}/../.created_resources.txt"
 
 REGION="${AWS_REGION:-eu-west-1}"
 BUCKET_NAME="${BUCKET_NAME:-automation-lab-$(date +%s)}"
@@ -96,7 +97,7 @@ else
   
   # Tag the bucket
   aws s3api put-bucket-tagging --bucket "$BUCKET_NAME" \
-    --tagging 'TagSet=[{Key=Name,Value='"$BUCKET_NAME"'},{Key=Project,Value=AutomationLab},{Key=CreatedDate,Value='"$(date -u +'%Y-%m-%d')"'}]' 2>&1 || \
+    --tagging 'TagSet=[{Key=Name,Value='"$BUCKET_NAME"'},{Key=Project,Value=AutomationLab}]' 2>&1 || \
     error_exit "Failed to tag bucket"
   
   log "INFO" "Bucket tagged successfully"
@@ -130,6 +131,10 @@ else
     error_exit "Failed to block public access"
 
   log "INFO" "Public access blocked"
+  
+  # Save resource ID for cleanup
+  echo "S3_BUCKET:$BUCKET_NAME:$REGION" >> "$RESOURCES_FILE"
+  log "INFO" "Resource ID saved for cleanup"
 fi
 
 # Upload sample file if exists (idempotent check)

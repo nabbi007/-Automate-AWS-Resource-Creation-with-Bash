@@ -8,6 +8,7 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly LOG_DIR="${SCRIPT_DIR}/../logs"
 readonly LOG_FILE="${LOG_DIR}/automation.log"
 readonly KEYS_DIR="${SCRIPT_DIR}/../keys"
+readonly RESOURCES_FILE="${SCRIPT_DIR}/../.created_resources.txt"
 
 REGION="${AWS_REGION:-eu-west-1}"
 AMI_ID="${AMI_ID:-ami-09c54d172e7aa3d9a}"
@@ -86,6 +87,10 @@ else
   fi
   
   log "INFO" "Private key saved: $KEY_FILE"
+  
+  # Save key pair name for cleanup
+  echo "KEY_PAIR:$KEY_NAME:$REGION" >> "$RESOURCES_FILE"
+  log "INFO" "Key pair saved for cleanup"
 fi
 
 # Validate AMI exists
@@ -118,7 +123,7 @@ else
     --instance-type "$INSTANCE_TYPE" \
     --key-name "$KEY_NAME" \
     --region "$REGION" \
-    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$KEY_NAME-instance},{Key=Project,Value=AutomationLab},{Key=CreatedDate,Value=$(date -u +'%Y-%m-%d')}]" \
+    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$KEY_NAME-instance},{Key=Project,Value=AutomationLab}]" \
     --query 'Instances[0].InstanceId' \
     --output text 2>&1) || error_exit "Failed to launch instance"
 
@@ -138,6 +143,10 @@ else
     --output text 2>/dev/null) || PUBLIC_IP="N/A"
 
   log "INFO" "Instance running successfully"
+  
+  # Save resource ID for cleanup
+  echo "EC2_INSTANCE:$INSTANCE_ID:$REGION" >> "$RESOURCES_FILE"
+  log "INFO" "Resource ID saved for cleanup"
 fi
 
 echo ""
