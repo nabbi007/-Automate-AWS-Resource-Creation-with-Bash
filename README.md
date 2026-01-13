@@ -1,99 +1,155 @@
-# Automate AWS Resource Creation with Bash
+# AWS Automation Lab
 
-A small collection of Bash scripts to create and clean up basic AWS resources (EC2, Security Group, S3) using the AWS CLI.
+Professional Bash scripts for automated AWS resource management with JSON state tracking and remote backend sync.
 
-Author: nabbi007  
-Date: 2026-01-05
+**Author:** nabbi007  
+**Date:** January 13, 2026
 
-## Project tree
-This is the recommended repository layout. Add your screenshots to `docs/screenshots/`.
+## Features
 
-```text
-.
-├── README.md
-├── create_ec2.sh
-├── create_security_group.sh
-├── create_s3_bucket.sh
-├── cleanup_resources.sh    # optional
-└── docs
-    └── screenshots
-        ├── sts_identity.png
-        ├── create_sg.png
-        ├── create_ec2.png
-        ├── create_s3.png
-        └── cleanup.png
-```
+✅ JSON state management (Terraform-style)  
+✅ Automatic S3 remote backend with versioning  
+✅ Drift detection & cleanup  
+✅ Tag-based safety validation  
+✅ Idempotent operations  
+✅ Automatic state synchronization
 
 ## Prerequisites
-- Bash (Linux, macOS, or WSL)
-- AWS CLI v2 installed and in PATH  
-  Install: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-- AWS credentials configured (via `aws configure`, named profile, or environment variables) with an IAM user/role that has EC2 and S3 permissions
-- jq (optional, for parsing JSON): `sudo apt install -y jq` or `brew install jq`
-- Internet access and appropriate AWS quotas (EC2, S3)
 
-Recommended quick verification:
+**Required:**
+- Bash (Linux/macOS/WSL/Git Bash)
+- AWS CLI v2 ([Install](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html))
+- jq (`sudo apt install jq` or `brew install jq`)
+- Configured AWS credentials
+
+**Verify:**
 ```bash
-aws --version
-aws sts get-caller-identity
-aws configure list
-jq --version  # optional
+aws --version && aws sts get-caller-identity && jq --version
 ```
 
-Minimal IAM actions required (grant least privilege where possible):
-- EC2: Describe*, RunInstances, CreateKeyPair, CreateSecurityGroup, AuthorizeSecurityGroupIngress, TerminateInstances, DeleteKeyPair
-- S3: CreateBucket, PutBucketVersioning, PutBucketPolicy, PutObject, DeleteObject, DeleteBucket
+## Quick Start
 
-## What the scripts do (one line each)
-- create_security_group.sh — create a security group and open ports 22 (SSH) and 80 (HTTP).  
-- create_ec2.sh — create (or reuse) a key pair and launch a free-tier Amazon Linux 2 EC2 instance; prints instance ID and public IP.  
-- create_s3_bucket.sh — create a unique S3 bucket, enable versioning, set a simple policy, upload `welcome.txt`.  
-- cleanup_resources.sh — (optional) find and remove resources tagged `Project=AutomationLab` (supports `--dry-run`).
+### 1. Setup
+```bash
+cd scripts
+chmod +x *.sh
+export AWS_REGION=eu-west-1  # Optional, defaults to eu-west-1
+```
 
-## Quick start
-1. Make scripts executable:
+### 2. Create Resources
 ```bash
-chmod +x create_security_group.sh create_ec2.sh create_s3_bucket.sh cleanup_resources.sh
-```
-2. (Optional) Set AWS profile/region:
-```bash
-export AWS_PROFILE=default
-export AWS_REGION=eu-west-1
-```
-3. Run scripts (examples):
-```bash
+# Everything automatic - state & remote backend created on first run
 ./create_security_group.sh
-./create_ec2.sh --key-name 
+./create_ec2.sh
 ./create_s3_bucket.sh
 ```
-4. Verify outputs printed by each script.
 
-## Screenshot of Execution
+### 3. View State
+```bash
+./state_manager.sh list
+./state_manager.sh get ec2_instances
+```
 
-## Cleanup
-screenshot/cleanup.png
+### 4. Cleanup
+```bash
+# Preview first (safe)
+DRY_RUN=true ./cleanup_resources.sh
 
-## STS
-![STS Identity](screenshot/sts.png)
+# Actually delete
+./cleanup_resources.sh
+```
 
-## Security Group
-![Create Security Group](screenshot/security_group.png)
+## What It Does
 
-## EC2
-![Create EC2](screenshot/ec2.png)
-## S3 Bucket
+| Script | Purpose |
+|--------|---------|
+| `create_security_group.sh` | Creates security group with ports 22 & 80 open |
+| `create_ec2.sh` | Launches EC2 instance with key pair |
+| `create_s3_bucket.sh` | Creates S3 bucket with versioning & encryption |
+| `cleanup_resources.sh` | Safely deletes all tracked resources |
+| `state_manager.sh` | Manages JSON state with remote sync |
 
-![Create S3](screenshot/bucket.png)
+## How It Works
 
-## Cleanup
+1. **First run:** Auto-creates S3 backend bucket with unique name
+2. **State tracking:** All resources automatically saved to JSON state
+3. **Auto-sync:** State continuously synced to S3 (source of truth)
+4. **Safety:** Tag validation + drift detection before deletion
+5. **Idempotent:** Safe to run multiple times
+
+## State Management
+
+**Automatic Features:**
+- Remote backend bucket auto-created with versioning
+- State file read-only (protected from accidents)
+- Drift detection (finds manually deleted resources)
+- Resource locking (prevents concurrent changes)
+
+**View Resources:**
+```bash
+./state_manager.sh list                # All resources
+./state_manager.sh drift               # Check for drift
+./state_manager.sh get security_groups # Specific type
+```
+
+## Project Structure
+
+```
+aws-automation-lab/
+├── scripts/
+│   ├── create_*.sh          # Resource creation
+│   ├── cleanup_resources.sh # Safe cleanup
+│   └── state_manager.sh     # State management
+├── keys/                    # SSH keys (git-ignored)
+├── logs/                    # Execution logs
+└── .aws-resources.state.json # JSON state (read-only)
+```
+
+## Screenshots
+
+### STS Identity
+![STS](screenshot/sts.png)
+
+### Security Group Creation
+![Security Group](screenshot/security_group.png)
+
+### EC2 Instance
+![EC2](screenshot/ec2.png)
+
+### S3 Bucket
+![S3](screenshot/bucket.png)
+
+### Cleanup
 ![Cleanup](screenshot/cleanup.png)
 
+## Important Notes
 
-## notes
-- Do NOT hard-code AWS credentials. Use `aws configure`, environment variables, or IAM roles.
-- Use least-privilege IAM policies and tag resources (`Project=AutomationLab`) so cleanup is safe.
-- Be mindful of the region, because their ami varies
-  
+⚠️ **Never hard-code AWS credentials** - use `aws configure`  
+⚠️ All resources tagged with `Project=AutomationLab` for safety  
+⚠️ AMI IDs vary by region - update if needed  
+⚠️ State file is read-only to prevent accidental changes
+
+## Troubleshooting
+
+**jq not found:**
+```bash
+sudo apt install jq  # Ubuntu/Debian
+brew install jq      # macOS
+```
+
+**State locked:**
+```bash
+rm -f .state.lock  # Only if no other process running
+```
+
+**View logs:**
+```bash
+tail -f logs/automation.log
+```
+
+
+
+
 
 
 
