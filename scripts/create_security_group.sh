@@ -7,7 +7,7 @@ set -euo pipefail
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly LOG_DIR="${SCRIPT_DIR}/../logs"
 readonly LOG_FILE="${LOG_DIR}/automation.log"
-readonly RESOURCES_FILE="${SCRIPT_DIR}/../.created_resources.txt"
+readonly STATE_MANAGER="${SCRIPT_DIR}/state_manager.sh"
 
 REGION="${AWS_REGION:-eu-west-1}"
 SG_NAME="${SG_NAME:-devops-sg}"
@@ -42,6 +42,12 @@ if ! aws sts get-caller-identity --region "$REGION" &>/dev/null; then
   error_exit "AWS credentials not configured or invalid for region: $REGION"
 fi
 
+# Auto-initialize state if it doesn't exist
+if [[ ! -f "${SCRIPT_DIR}/../.aws-resources.state.json" ]]; then
+  log "INFO" "State file not found. Initializing..."
+  "$STATE_MANAGER" init || error_exit "Failed to initialize state"
+fi
+
 log "INFO" "Starting Security Group creation process"
 log "INFO" "Region: $REGION, Name: $SG_NAME"
 
@@ -51,7 +57,7 @@ EXISTING_SG=$(aws ec2 describe-security-groups --region "$REGION" \
   --query 'SecurityGroups[0].GroupId' --output text 2>/dev/null || echo "None")
 
 if [[ "$EXISTING_SG" != "None" ]] && [[ -n "$EXISTING_SG" ]]; then
-  log "INFO" "Security group '$SG_NAME' already exists: $EXISTING_SG (idempotent: skipping creation)"
+  log "INFO" "Security group '$SG_NAME' already exists: $EXISTING_SG "
   SG_ID="$EXISTING_SG"
 else
   # Create security group
@@ -69,11 +75,17 @@ else
     error_exit "Failed to tag security group"
   
   log "INFO" "Security Group tagged successfully"
-  
-  # Save resource ID for cleanup
-  echo "SECURITY_GROUP:$SG_ID:$REGION" >> "$RESOURCES_FILE"
-  log "INFO" "Resource ID saved for cleanup"
 fi
+
+# Save to state manager (for both new and existing)
+sg_json=$(jq -n --arg id "$SG_ID" --arg name "$SG_NAME" --arg region "$REGION" --arg vpc "${VPC_ID:-default}" '{
+  id: $id,
+  name: $name,
+  region: $region,
+  vpc_id: $vpc
+}')
+"$STATE_MANAGER" add security_groups "$sg_json" 2>/dev/null || log "WARN" "Could not update state"
+log "INFO" "Security group saved to state"
 
 # Authorize inbound rules 
 for port in 22 80; do
@@ -88,8 +100,8 @@ for port in 22 80; do
   log "INFO" "Authorizing port $port ($protocol)..."
   aws ec2 authorize-security-group-ingress --group-id "$SG_ID" \
     --protocol "$protocol" --port "$port" --cidr 0.0.0.0/0 \
-    --region "$REGION" &>/dev/null || error_exit "Failed to authorize port $port"
-  log "INFO" "Port $port authorized successfully"
+    --region "$REGION" &>/dev/null || log "WARN" "Port $port rule may already exist or failed to add"
+  log "INFO" "Port $port authorization attempted"
 done
 
 log "INFO" "Security Group setup completed successfully"

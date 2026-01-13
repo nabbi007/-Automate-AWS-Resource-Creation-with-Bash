@@ -1,10 +1,11 @@
 #!/bin/bash
 # cleanup_resources.sh — Robust cleanup for AutomationLab resources
-# - Terminates EC2 instances with tag
+# - Uses JSON state manager for resource tracking
+# - Terminates EC2 instances with tag validation
 # - Deletes tagged Security Groups
 # - Empties and deletes tagged S3 buckets (supports versioned buckets)
 # - Deletes automation key pairs
-# Professional output, safe retries, and clear manual-action hints
+# - Includes drift detection and remote backend sync
 
 set -euo pipefail
 
@@ -12,17 +13,23 @@ set -euo pipefail
 SCRIPT_DIR="${SCRIPT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 LOG_DIR="${LOG_DIR:-${SCRIPT_DIR}/../logs}"
 LOG_FILE="${LOG_FILE:-${LOG_DIR}/automation.log}"
+STATE_MANAGER="${SCRIPT_DIR}/state_manager.sh"
 
-# Load AWS resource IDs from file
-RESOURCES_FILE="${SCRIPT_DIR}/../.created_resources.txt"
-if [[ ! -f "$RESOURCES_FILE" ]]; then
-  printf "%b" "${YELLOW}[ERROR] No resources file found. Run creation scripts first.${NC}\n"
-  printf "%b" "${YELLOW}Expected file: $RESOURCES_FILE${NC}\n"
+# Check if state file exists
+if [[ ! -f "${SCRIPT_DIR}/../.aws-resources.state.json" ]]; then
+  printf "%b" "${YELLOW}[ERROR] No state file found. Run creation scripts first or initialize: ./state_manager.sh init${NC}\n"
+  exit 1
+fi
+
+# Check dependencies
+if ! command -v jq &>/dev/null; then
+  printf "%b" "${YELLOW}[ERROR] jq not found. Install: sudo apt install jq (or brew install jq)${NC}\n"
   exit 1
 fi
 
 REGION="${AWS_REGION:-eu-west-1}"
 DRY_RUN="${DRY_RUN:-false}"
+SKIP_DRIFT_CHECK="${SKIP_DRIFT_CHECK:-false}"
 
 RESOURCES_DELETED=0
 RESOURCES_WARN=0
@@ -52,6 +59,22 @@ check_aws() {
     printf "%b" "${YELLOW}[ERROR] AWS credentials invalid for region $REGION${NC}\n"
     exit 1
   fi
+  
+  # Sync from remote backend
+  if [[ -n "${STATE_REMOTE_BACKEND:-}" ]]; then
+    log "Syncing state from remote backend..."
+    "$STATE_MANAGER" sync-pull 2>/dev/null || warn "Could not sync from remote backend"
+  fi
+  
+  # Run drift detection (unless skipped)
+  if [[ "$SKIP_DRIFT_CHECK" != "true" ]]; then
+    log "Running drift detection..."
+    if ! "$STATE_MANAGER" drift 2>/dev/null; then
+      warn "Drift detected - some resources in state don't exist in AWS"
+      log "Cleaning up non-existent resources from state..."
+      "$STATE_MANAGER" clean 2>/dev/null || true
+    fi
+  fi
 }
 
 safe_run() { # run command, log on failure but continue
@@ -63,84 +86,136 @@ safe_run() { # run command, log on failure but continue
 }
 
 delete_ec2_instances() {
-  log "Deleting EC2 instances from resources file..."
+  log "Deleting EC2 instances from state..."
   
-  # Read EC2 instance IDs from resources file
+  # Get EC2 instances from state
   local instances
-  instances=$(grep "^EC2_INSTANCE:" "$RESOURCES_FILE" 2>/dev/null || true)
+  instances=$("$STATE_MANAGER" get ec2_instances 2>/dev/null || echo "[]")
   
-  if [[ -z "$instances" ]]; then
-    log "No EC2 instances found in resources file (already clean)"
+  local count
+  count=$(echo "$instances" | jq 'length' 2>/dev/null || echo "0")
+  
+  if [[ "$count" == "0" ]]; then
+    log "No EC2 instances found in state (already clean)"
     return 0
   fi
   
-  while IFS=: read -r type id region; do
-    [[ "$type" != "EC2_INSTANCE" ]] && continue
+  log "Found $count EC2 instance(s) in state"
+  
+  # Process each instance
+  echo "$instances" | jq -c '.[]' | while read -r instance; do
+    local id region state_name
+    id=$(echo "$instance" | jq -r '.id')
+    region=$(echo "$instance" | jq -r '.region // "'"$REGION"'"')
+    state_name=$(echo "$instance" | jq -r '.name // "unknown"')
+    
+    # SAFETY CHECK: Verify resource has AutomationLab tag
+    local has_tag
+    has_tag=$(aws ec2 describe-instances --instance-ids "$id" --region "$region" \
+      --query "Reservations[0].Instances[0].Tags[?Key=='Project' && Value=='AutomationLab']" --output text 2>/dev/null || echo "")
+    
+    if [[ -z "$has_tag" ]]; then
+      warn "SAFETY: Instance $id does not have Project=AutomationLab tag. Skipping for safety."
+      MANUAL_ACTIONS+=("Verify and manually delete instance $id if needed")
+      continue
+    fi
+    
     if [[ "$DRY_RUN" == "true" ]]; then
-      log "[DRY RUN] Would terminate instance: $id"
+      log "[DRY RUN] Would terminate instance: $id ($state_name)"
       continue
     fi
     
     # Check current state before attempting termination
-    local state
-    state=$(aws ec2 describe-instances --instance-ids "$id" --region "${region:-$REGION}" \
-      --query "Reservations[0].Instances[0].State.Name" --output text 2>/dev/null || echo "unknown")
+    local aws_state
+    aws_state=$(aws ec2 describe-instances --instance-ids "$id" --region "$region" \
+      --query "Reservations[0].Instances[0].State.Name" --output text 2>/dev/null || echo "not-found")
     
-    if [[ "$state" == "terminated" ]] || [[ "$state" == "terminating" ]]; then
+    if [[ "$aws_state" == "terminated" ]] || [[ "$aws_state" == "terminating" ]]; then
       log "Instance $id already terminated/terminating (idempotent: skipping)"
+      "$STATE_MANAGER" remove ec2_instances "$id" 2>/dev/null || true
       continue
     fi
     
-    log "Terminating instance: $id (current state: $state)"
-    if aws ec2 terminate-instances --instance-ids "$id" --region "${region:-$REGION}" &>/dev/null; then
+    if [[ "$aws_state" == "not-found" ]]; then
+      log "Instance $id not found in AWS (removing from state)"
+      "$STATE_MANAGER" remove ec2_instances "$id" 2>/dev/null || true
+      continue
+    fi
+    
+    log "Terminating instance: $id ($state_name, current state: $aws_state)"
+    if aws ec2 terminate-instances --instance-ids "$id" --region "$region" &>/dev/null; then
       RESOURCES_DELETED=$((RESOURCES_DELETED+1))
       log "Waiting for instance $id to terminate..."
-      aws ec2 wait instance-terminated --instance-ids "$id" --region "${region:-$REGION}" || warn "Timeout waiting for $id to terminate"
+      aws ec2 wait instance-terminated --instance-ids "$id" --region "$region" || warn "Timeout waiting for $id to terminate"
       success "Terminated instance: $id"
+      "$STATE_MANAGER" remove ec2_instances "$id" 2>/dev/null || true
     else
       warn "Failed to terminate instance: $id"
       MANUAL_ACTIONS+=("Terminate instance $id via console or aws cli")
     fi
-  done < <(echo "$instances")
+  done
 }
 
 delete_security_groups() {
-  log "Deleting Security Groups from resources file..."
+  log "Deleting Security Groups from state..."
   
-  # Read security group IDs from resources file
+  # Get security groups from state
   local security_groups
-  security_groups=$(grep "^SECURITY_GROUP:" "$RESOURCES_FILE" 2>/dev/null || true)
+  security_groups=$("$STATE_MANAGER" get security_groups 2>/dev/null || echo "[]")
   
-  if [[ -z "$security_groups" ]]; then
-    log "No Security Groups found in resources file (already clean)"
+  local count
+  count=$(echo "$security_groups" | jq 'length' 2>/dev/null || echo "0")
+  
+  if [[ "$count" == "0" ]]; then
+    log "No Security Groups found in state (already clean)"
     return 0
   fi
+  
+  log "Found $count Security Group(s) in state"
   
   # Wait a short while for ENIs to be released
   sleep 5
   
-  while IFS=: read -r type sg region; do
-    [[ "$type" != "SECURITY_GROUP" ]] && continue
+  # Process each security group
+  echo "$security_groups" | jq -c '.[]' | while read -r sg_obj; do
+    local sg region sg_name
+    sg=$(echo "$sg_obj" | jq -r '.id')
+    region=$(echo "$sg_obj" | jq -r '.region // "'"$REGION"'"')
+    sg_name=$(echo "$sg_obj" | jq -r '.name // "unknown"')
+    
+    # SAFETY CHECK: Verify resource has AutomationLab tag
+    local has_tag
+    has_tag=$(aws ec2 describe-security-groups --group-ids "$sg" --region "$region" \
+      --query "SecurityGroups[0].Tags[?Key=='Project' && Value=='AutomationLab']" --output text 2>/dev/null || echo "")
+    
+    if [[ -z "$has_tag" ]]; then
+      warn "SAFETY: Security Group $sg does not have Project=AutomationLab tag. Skipping for safety."
+      MANUAL_ACTIONS+=("Verify and manually delete security group $sg if needed")
+      continue
+    fi
+    
     if [[ "$DRY_RUN" == "true" ]]; then
-      log "[DRY RUN] Would delete Security Group: $sg"
+      log "[DRY RUN] Would delete Security Group: $sg ($sg_name)"
       continue
     fi
     
     # Check if security group still exists
-    if ! aws ec2 describe-security-groups --group-ids "$sg" --region "${region:-$REGION}" &>/dev/null; then
-      log "Security Group $sg already deleted (idempotent: skipping)"
+    if ! aws ec2 describe-security-groups --group-ids "$sg" --region "$region" &>/dev/null; then
+      log "Security Group $sg already deleted (removing from state)"
+      "$STATE_MANAGER" remove security_groups "$sg" 2>/dev/null || true
       continue
     fi
     
-    log "Deleting Security Group: $sg"
-    if aws ec2 delete-security-group --group-id "$sg" --region "${region:-$REGION}" &>/dev/null; then
+    log "Deleting Security Group: $sg ($sg_name)"
+    if aws ec2 delete-security-group --group-id "$sg" --region "$region" &>/dev/null; then
       RESOURCES_DELETED=$((RESOURCES_DELETED+1))
       success "Deleted Security Group: $sg"
+      "$STATE_MANAGER" remove security_groups "$sg" 2>/dev/null || true
     else
       warn "Failed to delete Security Group: $sg (may have dependencies)"
       MANUAL_ACTIONS+=("Delete or detach resources using Security Group $sg")
     fi
-  done < <(echo "$security_groups")
+  done
 }
 
 empty_and_delete_bucket() {
@@ -219,41 +294,70 @@ empty_and_delete_bucket() {
 }
 
 delete_s3_buckets() {
-  log "Deleting S3 buckets from resources file..."
+  log "Deleting S3 buckets from state..."
   
-  # Read bucket names from resources file
+  # Get buckets from state
   local buckets
-  buckets=$(grep "^S3_BUCKET:" "$RESOURCES_FILE" 2>/dev/null || true)
+  buckets=$("$STATE_MANAGER" get s3_buckets 2>/dev/null || echo "[]")
   
-  if [[ -z "$buckets" ]]; then
-    log "No S3 buckets found in resources file (already clean)"
+  local count
+  count=$(echo "$buckets" | jq 'length' 2>/dev/null || echo "0")
+  
+  if [[ "$count" == "0" ]]; then
+    log "No S3 buckets found in state (already clean)"
     return 0
   fi
   
-  while IFS=: read -r type bucket region; do
-    [[ "$type" != "S3_BUCKET" ]] && continue
+  log "Found $count S3 bucket(s) in state"
+  
+  # Process each bucket
+  echo "$buckets" | jq -c '.[]' | while read -r bucket_obj; do
+    local bucket region
+    bucket=$(echo "$bucket_obj" | jq -r '.name // .id')
+    region=$(echo "$bucket_obj" | jq -r '.region // "'"$REGION"'"')
+    
+    # SAFETY CHECK: Verify resource has AutomationLab tag
+    local has_tag
+    has_tag=$(aws s3api get-bucket-tagging --bucket "$bucket" --region "$region" 2>/dev/null | grep -q "AutomationLab" && echo "yes" || echo "")
+    
+    if [[ -z "$has_tag" ]]; then
+      warn "SAFETY: S3 bucket $bucket does not have Project=AutomationLab tag. Skipping for safety."
+      MANUAL_ACTIONS+=("Verify and manually delete bucket $bucket if needed")
+      continue
+    fi
+    
     if [[ "$DRY_RUN" == "true" ]]; then
       log "[DRY RUN] Would delete S3 bucket: $bucket"
     else
-      empty_and_delete_bucket "$bucket" "${region:-$REGION}"
+      empty_and_delete_bucket "$bucket" "$region"
+      "$STATE_MANAGER" remove s3_buckets "$bucket" 2>/dev/null || true
     fi
-  done < <(echo "$buckets")
+  done
 }
 
 delete_key_pairs() {
-  log "Deleting key pairs from resources file..."
+  log "Deleting key pairs from state..."
   
-  # Read key pair names from resources file
+  # Get key pairs from state
   local key_pairs
-  key_pairs=$(grep "^KEY_PAIR:" "$RESOURCES_FILE" 2>/dev/null || true)
+  key_pairs=$("$STATE_MANAGER" get key_pairs 2>/dev/null || echo "[]")
   
-  if [[ -z "$key_pairs" ]]; then
-    log "No key pairs found in resources file (already clean)"
+  local count
+  count=$(echo "$key_pairs" | jq 'length' 2>/dev/null || echo "0")
+  
+  if [[ "$count" == "0" ]]; then
+    log "No key pairs found in state (already clean)"
     return 0
   fi
   
-  while IFS=: read -r type key_name region; do
-    [[ "$type" != "KEY_PAIR" ]] && continue
+  log "Found $count key pair(s) in state"
+  
+  # Process each key pair
+  echo "$key_pairs" | jq -c '.[]' | while read -r kp_obj; do
+    local key_name region local_file
+    key_name=$(echo "$kp_obj" | jq -r '.name // .id')
+    region=$(echo "$kp_obj" | jq -r '.region // "'"$REGION"'"')
+    local_file=$(echo "$kp_obj" | jq -r '.local_file // ""')
     
     if [[ "$DRY_RUN" == "true" ]]; then
       log "[DRY RUN] Would delete key pair: $key_name"
@@ -261,43 +365,47 @@ delete_key_pairs() {
     fi
     
     # Check if key pair still exists
-    if ! aws ec2 describe-key-pairs --key-names "$key_name" --region "${region:-$REGION}" &>/dev/null; then
-      log "Key pair $key_name already deleted"
+    if ! aws ec2 describe-key-pairs --key-names "$key_name" --region "$region" &>/dev/null; then
+      log "Key pair $key_name already deleted (removing from state)"
+      "$STATE_MANAGER" remove key_pairs "$key_name" 2>/dev/null || true
       continue
     fi
     
     log "Deleting key pair: $key_name"
-    if aws ec2 delete-key-pair --key-name "$key_name" --region "${region:-$REGION}" &>/dev/null; then
+    if aws ec2 delete-key-pair --key-name "$key_name" --region "$region" &>/dev/null; then
       RESOURCES_DELETED=$((RESOURCES_DELETED+1))
       success "Deleted key pair: $key_name"
+      "$STATE_MANAGER" remove key_pairs "$key_name" 2>/dev/null || true
       
       # Also delete local key file if exists
-      local key_file="${SCRIPT_DIR}/../keys/${key_name}.pem"
-      if [[ -f "$key_file" ]]; then
-        rm -f "$key_file" 2>/dev/null || true
-        log "INFO" "Deleted local key file: $key_file"
+      if [[ -n "$local_file" && -f "$local_file" ]]; then
+        rm -f "$local_file" 2>/dev/null || true
+        log "Deleted local key file: $local_file"
       fi
     else
       warn "Failed to delete key pair: $key_name"
       MANUAL_ACTIONS+=("Delete key pair $key_name via console or aws cli")
     fi
-  done < <(echo "$key_pairs")
+  done
 }
 
 # Main
 check_aws
-log "Starting cleanup of AWS resources"
-log "Resources File: $RESOURCES_FILE"
+log "Starting cleanup of AWS resources from state"
+
+if [[ "$DRY_RUN" == "true" ]]; then
+  log "[DRY RUN MODE] No resources will actually be deleted"
+fi
 
 delete_ec2_instances
 delete_security_groups
 delete_s3_buckets
 delete_key_pairs
 
-# Remove resources file after successful cleanup
-if [[ "$DRY_RUN" != "true" ]] && [[ -f "$RESOURCES_FILE" ]]; then
-  rm -f "$RESOURCES_FILE"
-  log "Resources file removed after cleanup"
+# Sync state to remote backend
+if [[ "$DRY_RUN" != "true" ]] && [[ -n "${STATE_REMOTE_BACKEND:-}" ]]; then
+  log "Syncing state to remote backend..."
+  "$STATE_MANAGER" sync-push 2>/dev/null || warn "Could not sync to remote backend"
 fi
 
 # Summary
@@ -308,7 +416,7 @@ echo "============================================================"
 echo "Resources Deleted  : $RESOURCES_DELETED"
 echo "Warnings Logged    : $RESOURCES_WARN"
 echo "Region             : $REGION"
-echo "Resources File     : $RESOURCES_FILE"
+echo "State File         : ${SCRIPT_DIR}/../.aws-resources.state.json"
 echo "Log File           : $LOG_FILE"
 echo "============================================================"
 

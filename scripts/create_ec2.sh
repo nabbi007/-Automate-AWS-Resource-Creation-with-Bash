@@ -8,7 +8,13 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly LOG_DIR="${SCRIPT_DIR}/../logs"
 readonly LOG_FILE="${LOG_DIR}/automation.log"
 readonly KEYS_DIR="${SCRIPT_DIR}/../keys"
-readonly RESOURCES_FILE="${SCRIPT_DIR}/../.created_resources.txt"
+readonly STATE_MANAGER="${SCRIPT_DIR}/state_manager.sh"
+
+# Initialize state if not exists
+if [[ ! -f "${SCRIPT_DIR}/../.aws-resources.state.json" ]]; then
+  echo "[INFO] State file not found. Initializing..."
+  "${SCRIPT_DIR}/state_manager.sh" init >/dev/null 2>&1 || true
+fi
 
 REGION="${AWS_REGION:-eu-west-1}"
 AMI_ID="${AMI_ID:-ami-09c54d172e7aa3d9a}"
@@ -43,6 +49,12 @@ fi
 
 if ! aws sts get-caller-identity --region "$REGION" &>/dev/null; then
   error_exit "AWS credentials not configured or invalid for region: $REGION"
+fi
+
+# Initialize state if it doesn't exist
+if [[ ! -f "${SCRIPT_DIR}/../.aws-resources.state.json" ]]; then
+  log "INFO" "State file not found. Initializing..."
+  "$STATE_MANAGER" init
 fi
 
 log "INFO" "Starting EC2 instance creation process"
@@ -88,9 +100,16 @@ else
   
   log "INFO" "Private key saved: $KEY_FILE"
   
-  # Save key pair name for cleanup
-  echo "KEY_PAIR:$KEY_NAME:$REGION" >> "$RESOURCES_FILE"
-  log "INFO" "Key pair saved for cleanup"
+  # Add to state manager
+  key_pair_json=$(jq -n --arg name "$KEY_NAME" --arg region "$REGION" --arg file "$KEY_FILE" '{
+    id: $name,
+    name: $name,
+    region: $region,
+    local_file: $file
+  }')
+  "$STATE_MANAGER" add key_pairs "$key_pair_json" 2>/dev/null || log "WARN" "Could not update state"
+  
+  log "INFO" "Key pair saved to state"
 fi
 
 # Validate AMI exists
@@ -144,9 +163,18 @@ else
 
   log "INFO" "Instance running successfully"
   
-  # Save resource ID for cleanup
-  echo "EC2_INSTANCE:$INSTANCE_ID:$REGION" >> "$RESOURCES_FILE"
-  log "INFO" "Resource ID saved for cleanup"
+  # Save EC2 instance to state
+  instance_json=$(jq -n --arg id "$INSTANCE_ID" --arg name "$KEY_NAME-instance" --arg ip "$PUBLIC_IP" --arg region "$REGION" --arg type "$INSTANCE_TYPE" '{
+    id: $id,
+    name: $name,
+    public_ip: $ip,
+    region: $region,
+    instance_type: $type,
+    state: "running"
+  }')
+  "$STATE_MANAGER" add ec2_instances "$instance_json" 2>/dev/null || log "WARN" "Could not update state"
+  
+  log "INFO" "Resource saved to state"
 fi
 
 echo ""

@@ -8,7 +8,8 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly LOG_DIR="${SCRIPT_DIR}/../logs"
 readonly LOG_FILE="${LOG_DIR}/automation.log"
 readonly ASSETS_DIR="${SCRIPT_DIR}/../assets"
-readonly RESOURCES_FILE="${SCRIPT_DIR}/../.created_resources.txt"
+readonly STATE_MANAGER="${SCRIPT_DIR}/state_manager.sh"
+readonly STATE_FILE="${SCRIPT_DIR}/../.aws-resources.state.json"
 
 REGION="${AWS_REGION:-eu-west-1}"
 BUCKET_NAME="${BUCKET_NAME:-automation-lab-$(date +%s)}"
@@ -41,6 +42,12 @@ fi
 
 if ! aws sts get-caller-identity --region "$REGION" &>/dev/null; then
   error_exit "AWS credentials not configured or invalid for region: $REGION"
+fi
+
+# Auto-initialize state if it doesn't exist
+if [[ ! -f "${SCRIPT_DIR}/../.aws-resources.state.json" ]]; then
+  log "INFO" "State file not found. Initializing..."
+  "$STATE_MANAGER" init || error_exit "Failed to initialize state"
 fi
 
 log "INFO" "Starting S3 bucket creation process"
@@ -132,9 +139,16 @@ else
 
   log "INFO" "Public access blocked"
   
-  # Save resource ID for cleanup
-  echo "S3_BUCKET:$BUCKET_NAME:$REGION" >> "$RESOURCES_FILE"
-  log "INFO" "Resource ID saved for cleanup"
+  # Save to state manager
+  bucket_json=$(jq -n --arg name "$BUCKET_NAME" --arg region "$REGION" '{
+    id: $name,
+    name: $name,
+    region: $region,
+    versioning: "enabled",
+    encryption: "AES256"
+  }')
+  "$STATE_MANAGER" add s3_buckets "$bucket_json" 2>/dev/null || log "WARN" "Could not update state"
+  log "INFO" "S3 bucket saved to state"
 fi
 
 # Upload sample file if exists (idempotent check)
