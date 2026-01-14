@@ -7,6 +7,7 @@ Professional Bash scripts for automated AWS resource management with JSON state 
 
 ## Features
 
+✅ **Dry-run mode** - Validate operations before execution (like Terraform plan)  
 ✅ JSON state management (Terraform-style)  
 ✅ Automatic S3 remote backend with versioning  
 ✅ Drift detection & cleanup  
@@ -38,7 +39,12 @@ export AWS_REGION=eu-west-1  # Optional, defaults to eu-west-1
 
 ### 2. Create Resources
 ```bash
-# Everything automatic - state & remote backend created on first run
+# Preview changes first (dry-run mode)
+./create_security_group.sh --dry-run
+./create_ec2.sh --dry-run
+./create_s3_bucket.sh --dry-run
+
+# Actually create resources
 ./create_security_group.sh
 ./create_ec2.sh
 ./create_s3_bucket.sh
@@ -52,10 +58,10 @@ export AWS_REGION=eu-west-1  # Optional, defaults to eu-west-1
 
 ### 4. Cleanup
 ```bash
-# Preview first (safe)
-DRY_RUN=true ./cleanup_resources.sh
+# Preview deletion (dry-run mode)
+./cleanup_resources.sh --dry-run
 
-# Actually delete
+# Actually delete resources
 ./cleanup_resources.sh
 ```
 
@@ -99,16 +105,47 @@ aws-automation-lab/
 ├── scripts/
 │   ├── create_*.sh          # Resource creation
 │   ├── cleanup_resources.sh # Safe cleanup
-│   └── state_manager.sh     # State management
+│   ├── state_manager.sh     # State management
+│   └── dry_run_manager.sh   # Dry-run validation
 ├── keys/                    # SSH keys (git-ignored)
 ├── logs/                    # Execution logs
 └── .aws-resources.state.json # JSON state (read-only)
 ```
 
+## Dry-Run Mode
+
+**Test before executing!** All scripts support `--dry-run` flag to validate operations without making changes:
+
+```bash
+# Validate EC2 creation
+./create_ec2.sh --dry-run
+
+# Validate S3 bucket creation  
+./create_s3_bucket.sh --dry-run
+
+# Validate security group creation
+./create_security_group.sh --dry-run
+
+# Preview cleanup operations
+./cleanup_resources.sh --dry-run
+```
+
+**What dry-run checks:**
+- ✅ AWS permissions & credentials
+- ✅ Resource name conflicts
+- ✅ VPC & network availability
+- ✅ AMI & instance type validity
+- ✅ Existing resources detection
+
+**Exit Codes:**
+- `0` = Validation passed (safe to run)
+- `1` = Validation failed (fix issues first)
+
 ## Screenshots
 
 ### STS Identity
 ![STS](screenshot/sts.png)
+
 
 ### Security Group Creation
 ![Security Group](screenshot/security_group.png)
@@ -118,6 +155,16 @@ aws-automation-lab/
 
 ### S3 Bucket
 ![S3](screenshot/bucket.png)
+
+### Dry-Run Mode
+![EC2 Dry-Run](screenshot/ec2_dry_run.png)
+*Validating EC2 instance creation before execution*
+
+![Security Group Dry-Run](screenshot/sg_dry_run.png)
+*Checking security group parameters and permissions*
+
+![Cleanup Dry-Run](screenshot/cleanup_dry_run.png)
+*Previewing resources to be deleted*
 
 ### Cleanup
 ![Cleanup](screenshot/cleanup.png)
