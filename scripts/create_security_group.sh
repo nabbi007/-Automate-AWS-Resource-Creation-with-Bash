@@ -1,6 +1,7 @@
 #!/bin/bash
 # AWS Security Group Creation Script - Professional Edition
 # Creates EC2 security groups with logging and error handling
+# Supports --dry-run flag for validation before creation
 
 set -euo pipefail
 
@@ -8,6 +9,13 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly LOG_DIR="${SCRIPT_DIR}/../logs"
 readonly LOG_FILE="${LOG_DIR}/automation.log"
 readonly STATE_MANAGER="${SCRIPT_DIR}/state_manager.sh"
+readonly DRY_RUN_MANAGER="${SCRIPT_DIR}/dry_run_manager.sh"
+
+# Source dry-run manager
+source "$DRY_RUN_MANAGER"
+
+# Parse command-line arguments for dry-run
+parse_dry_run_args "$@"
 
 REGION="${AWS_REGION:-eu-west-1}"
 SG_NAME="${SG_NAME:-devops-sg}"
@@ -51,6 +59,9 @@ fi
 log "INFO" "Starting Security Group creation process"
 log "INFO" "Region: $REGION, Name: $SG_NAME"
 
+# Print dry-run banner if enabled
+print_dry_run_banner
+
 # Check if SG already exists
 EXISTING_SG=$(aws ec2 describe-security-groups --region "$REGION" \
   --filters "Name=group-name,Values=$SG_NAME" \
@@ -60,9 +71,16 @@ if [[ "$EXISTING_SG" != "None" ]] && [[ -n "$EXISTING_SG" ]]; then
   log "INFO" "Security group '$SG_NAME' already exists: $EXISTING_SG "
   SG_ID="$EXISTING_SG"
 else
-  # Create security group
+  # Create security group (with dry-run support)
   create_args=("--group-name" "$SG_NAME" "--description" "$DESCRIPTION" "--region" "$REGION")
   [[ -n "$VPC_ID" ]] && create_args+=("--vpc-id" "$VPC_ID")
+  
+  if is_dry_run; then
+    # Simulate security group creation first
+    simulate_security_group_creation "$SG_NAME" "$DESCRIPTION" "$REGION"
+    dry_run_info "Dry-run validation complete. To execute, run: ./create_security_group.sh --execute"
+    exit 0
+  fi
   
   SG_ID=$(aws ec2 create-security-group "${create_args[@]}" --query 'GroupId' --output text 2>&1) || \
     error_exit "Failed to create security group"

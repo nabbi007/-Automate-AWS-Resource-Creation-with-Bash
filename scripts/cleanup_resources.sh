@@ -5,7 +5,8 @@
 # - Deletes tagged Security Groups
 # - Empties and deletes tagged S3 buckets (supports versioned buckets)
 # - Deletes automation key pairs
-# - Includes drift detection and remote backend sync
+# - Includes drift detection
+# - Supports --dry-run flag for safe deletion preview
 
 set -euo pipefail
 
@@ -14,6 +15,13 @@ SCRIPT_DIR="${SCRIPT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 LOG_DIR="${LOG_DIR:-${SCRIPT_DIR}/../logs}"
 LOG_FILE="${LOG_FILE:-${LOG_DIR}/automation.log}"
 STATE_MANAGER="${SCRIPT_DIR}/state_manager.sh"
+DRY_RUN_MANAGER="${SCRIPT_DIR}/dry_run_manager.sh"
+
+# Source dry-run manager
+source "$DRY_RUN_MANAGER" 2>/dev/null || true
+
+# Parse command-line arguments for dry-run
+parse_dry_run_args "$@" 2>/dev/null || true
 
 # Check if state file exists
 if [[ ! -f "${SCRIPT_DIR}/../.aws-resources.state.json" ]]; then
@@ -28,7 +36,6 @@ if ! command -v jq &>/dev/null; then
 fi
 
 REGION="${AWS_REGION:-eu-west-1}"
-DRY_RUN="${DRY_RUN:-false}"
 SKIP_DRIFT_CHECK="${SKIP_DRIFT_CHECK:-false}"
 
 RESOURCES_DELETED=0
@@ -49,6 +56,9 @@ log() { printf "%b" "${BLUE}[$(date '+%Y-%m-%d %H:%M:%S')] [INFO] $1${NC}\n" | t
 success() { printf "%b" "${GREEN}[$(date '+%Y-%m-%d %H:%M:%S')] [SUCCESS] $1${NC}\n" | tee -a "$LOG_FILE"; }
 warn() { printf "%b" "${YELLOW}[$(date '+%Y-%m-%d %H:%M:%S')] [WARN] $1${NC}\n" | tee -a "$LOG_FILE"; RESOURCES_WARN=$((RESOURCES_WARN+1)); }
 error_log() { printf "%b" "[ERROR] $1\n" | tee -a "$LOG_FILE"; }
+
+# Print dry-run banner if enabled
+print_dry_run_banner 2>/dev/null || true
 
 check_aws() {
   if ! command -v aws &>/dev/null; then
@@ -120,7 +130,7 @@ delete_ec2_instances() {
       continue
     fi
     
-    if [[ "$DRY_RUN" == "true" ]]; then
+    if is_dry_run 2>/dev/null; then
       log "[DRY RUN] Would terminate instance: $id ($state_name)"
       continue
     fi
@@ -131,7 +141,7 @@ delete_ec2_instances() {
       --query "Reservations[0].Instances[0].State.Name" --output text 2>/dev/null || echo "not-found")
     
     if [[ "$aws_state" == "terminated" ]] || [[ "$aws_state" == "terminating" ]]; then
-      log "Instance $id already terminated/terminating (idempotent: skipping)"
+      log "Instance $id already terminated/terminating"
       "$STATE_MANAGER" remove ec2_instances "$id" 2>/dev/null || true
       continue
     fi
@@ -194,7 +204,7 @@ delete_security_groups() {
       continue
     fi
     
-    if [[ "$DRY_RUN" == "true" ]]; then
+    if is_dry_run 2>/dev/null; then
       log "[DRY RUN] Would delete Security Group: $sg ($sg_name)"
       continue
     fi
@@ -231,7 +241,7 @@ empty_and_delete_bucket() {
     MANUAL_ACTIONS+=("Remove Object Lock or wait until retention expires for bucket $bucket")
   fi
 
-  if [[ "$DRY_RUN" == "true" ]]; then
+  if is_dry_run 2>/dev/null; then
     log "[DRY RUN] Would suspend versioning and empty bucket: $bucket"
     return
   fi
@@ -279,7 +289,7 @@ empty_and_delete_bucket() {
 
   # Check if bucket still exists before final delete attempt
   if ! aws s3api head-bucket --bucket "$bucket" --region "$bucket_region" 2>/dev/null; then
-    log "Bucket $bucket already deleted (idempotent: skipping final delete)"
+    log "Bucket $bucket already deleted"
     return 0
   fi
   
@@ -326,7 +336,7 @@ delete_s3_buckets() {
       continue
     fi
     
-    if [[ "$DRY_RUN" == "true" ]]; then
+    if is_dry_run 2>/dev/null; then
       log "[DRY RUN] Would delete S3 bucket: $bucket"
     else
       empty_and_delete_bucket "$bucket" "$region"
@@ -359,7 +369,7 @@ delete_key_pairs() {
     region=$(echo "$kp_obj" | jq -r '.region // "'"$REGION"'"')
     local_file=$(echo "$kp_obj" | jq -r '.local_file // ""')
     
-    if [[ "$DRY_RUN" == "true" ]]; then
+    if is_dry_run 2>/dev/null; then
       log "[DRY RUN] Would delete key pair: $key_name"
       continue
     fi

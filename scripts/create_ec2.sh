@@ -1,6 +1,7 @@
 #!/bin/bash
 # AWS EC2 Instance Creation Script - Professional Edition
 # Launches EC2 instances with key pair management and logging
+# Supports --dry-run flag for validation before creation
 
 set -euo pipefail
 
@@ -9,6 +10,13 @@ readonly LOG_DIR="${SCRIPT_DIR}/../logs"
 readonly LOG_FILE="${LOG_DIR}/automation.log"
 readonly KEYS_DIR="${SCRIPT_DIR}/../keys"
 readonly STATE_MANAGER="${SCRIPT_DIR}/state_manager.sh"
+readonly DRY_RUN_MANAGER="${SCRIPT_DIR}/dry_run_manager.sh"
+
+# Source dry-run manager
+source "$DRY_RUN_MANAGER"
+
+# Parse command-line arguments for dry-run
+parse_dry_run_args "$@"
 
 # Initialize state if not exists
 if [[ ! -f "${SCRIPT_DIR}/../.aws-resources.state.json" ]]; then
@@ -59,6 +67,9 @@ fi
 
 log "INFO" "Starting EC2 instance creation process"
 log "INFO" "Region: $REGION, AMI: $AMI_ID, Instance Type: $INSTANCE_TYPE"
+
+# Print dry-run banner if enabled
+print_dry_run_banner
 
 # Check if key pair already exists
 if aws ec2 describe-key-pairs --key-names "$KEY_NAME" --region "$REGION" &>/dev/null; then
@@ -134,8 +145,15 @@ if [[ "$EXISTING_ID" != "None" ]] && [[ -n "$EXISTING_ID" ]]; then
     --query 'Reservations[0].Instances[0].PublicIpAddress' \
     --output text 2>/dev/null) || PUBLIC_IP="N/A"
 else
-  # Launch EC2 instance
+  # Launch EC2 instance (with dry-run support)
   log "INFO" "Launching EC2 instance..."
+  
+  if is_dry_run; then
+    # Simulate EC2 creation first
+    simulate_ec2_creation "$INSTANCE_TYPE" "$AMI_ID" "$KEY_NAME" "$REGION"
+    dry_run_info "Dry-run validation complete. To execute, run: ./create_ec2.sh --execute"
+    exit 0
+  fi
 
   INSTANCE_ID=$(aws ec2 run-instances \
     --image-id "$AMI_ID" \

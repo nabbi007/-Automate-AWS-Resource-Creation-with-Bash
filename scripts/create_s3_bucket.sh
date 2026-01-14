@@ -1,6 +1,7 @@
 #!/bin/bash
 # AWS S3 Bucket Creation Script - Professional Edition
 # Creates S3 buckets with versioning, encryption, and file upload
+# Supports --dry-run flag for validation before creation
 
 set -euo pipefail
 
@@ -10,6 +11,13 @@ readonly LOG_FILE="${LOG_DIR}/automation.log"
 readonly ASSETS_DIR="${SCRIPT_DIR}/../assets"
 readonly STATE_MANAGER="${SCRIPT_DIR}/state_manager.sh"
 readonly STATE_FILE="${SCRIPT_DIR}/../.aws-resources.state.json"
+readonly DRY_RUN_MANAGER="${SCRIPT_DIR}/dry_run_manager.sh"
+
+# Source dry-run manager
+source "$DRY_RUN_MANAGER"
+
+# Parse command-line arguments for dry-run
+parse_dry_run_args "$@"
 
 REGION="${AWS_REGION:-eu-west-1}"
 BUCKET_NAME="${BUCKET_NAME:-automation-lab-$(date +%s)}"
@@ -53,6 +61,9 @@ fi
 log "INFO" "Starting S3 bucket creation process"
 log "INFO" "Region: $REGION, Bucket: $BUCKET_NAME"
 
+# Print dry-run banner if enabled
+print_dry_run_banner
+
 # Validate bucket name format (AWS S3 naming rules)
 if ! [[ "$BUCKET_NAME" =~ ^[a-z0-9][a-z0-9.-]*[a-z0-9]$ ]] || [[ ${#BUCKET_NAME} -lt 3 ]] || [[ ${#BUCKET_NAME} -gt 63 ]]; then
   error_exit "Invalid bucket name: $BUCKET_NAME (3-63 chars, lowercase, numbers, hyphens, dots)"
@@ -63,31 +74,40 @@ if aws s3api head-bucket --bucket "$BUCKET_NAME" --region "$REGION" 2>/dev/null;
   log "INFO" "S3 bucket '$BUCKET_NAME' already exists (idempotent: skipping creation)"
   BUCKET_ID="$BUCKET_NAME"
   
-  # Ensure existing bucket has proper configuration
-  log "INFO" "Verifying bucket configuration..."
-  
-  # Check and enable versioning if not already enabled
-  versioning=$(aws s3api get-bucket-versioning --bucket "$BUCKET_NAME" --region "$REGION" --query 'Status' --output text 2>/dev/null || echo "None")
-  if [[ "$versioning" != "Enabled" ]]; then
-    log "INFO" "Enabling versioning on existing bucket..."
-    aws s3api put-bucket-versioning --bucket "$BUCKET_NAME" --region "$REGION" \
-      --versioning-configuration Status=Enabled 2>&1 || log "WARN" "Failed to enable versioning"
-  fi
-  
-  # Check and enable encryption if not already enabled
-  if ! aws s3api get-bucket-encryption --bucket "$BUCKET_NAME" --region "$REGION" &>/dev/null; then
-    log "INFO" "Enabling encryption on existing bucket..."
-    aws s3api put-bucket-encryption --bucket "$BUCKET_NAME" --region "$REGION" \
-      --server-side-encryption-configuration '{
-        "Rules": [{
-          "ApplyServerSideEncryptionByDefault": {
-            "SSEAlgorithm": "AES256"
-          }
-        }]
-      }' 2>&1 || log "WARN" "Failed to enable encryption"
+  if ! is_dry_run; then
+    # Ensure existing bucket has proper configuration
+    log "INFO" "Verifying bucket configuration..."
+    
+    # Check and enable versioning if not already enabled
+    versioning=$(aws s3api get-bucket-versioning --bucket "$BUCKET_NAME" --region "$REGION" --query 'Status' --output text 2>/dev/null || echo "None")
+    if [[ "$versioning" != "Enabled" ]]; then
+      log "INFO" "Enabling versioning on existing bucket..."
+      aws s3api put-bucket-versioning --bucket "$BUCKET_NAME" --region "$REGION" \
+        --versioning-configuration Status=Enabled 2>&1 || log "WARN" "Failed to enable versioning"
+    fi
+    
+    # Check and enable encryption if not already enabled
+    if ! aws s3api get-bucket-encryption --bucket "$BUCKET_NAME" --region "$REGION" &>/dev/null; then
+      log "INFO" "Enabling encryption on existing bucket..."
+      aws s3api put-bucket-encryption --bucket "$BUCKET_NAME" --region "$REGION" \
+        --server-side-encryption-configuration '{
+          "Rules": [{
+            "ApplyServerSideEncryptionByDefault": {
+              "SSEAlgorithm": "AES256"
+            }
+          }]
+        }' 2>&1 || log "WARN" "Failed to enable encryption"
+    fi
   fi
 else
   log "INFO" "Creating S3 bucket: $BUCKET_NAME"
+  
+  if is_dry_run; then
+    # Simulate S3 creation first
+    simulate_s3_creation "$BUCKET_NAME" "$REGION"
+    dry_run_info "Dry-run validation complete. To execute, run: ./create_s3_bucket.sh --execute"
+    exit 0
+  fi
   
   # Create bucket with proper region handling
   if [[ "$REGION" == "us-east-1" ]]; then
