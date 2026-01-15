@@ -157,13 +157,16 @@ aws-automation-lab/
 ![S3](screenshot/bucket.png)
 
 ### Dry-Run Mode
-![EC2 Dry-Run](screenshot/ec2_dry_run.png)
+![EC2 Dry-Run](screenshot/ec2-dry-run.png)
 *Validating EC2 instance creation before execution*
 
-![Security Group Dry-Run](screenshot/sg_dry_run.png)
+![S3 Dry-Run](screenshot/s3-dry-run.png)
+*Validating EC2 instance creation before execution*
+
+![Security Group Dry-Run](screenshot/security-dry-run.png)
 *Checking security group parameters and permissions*
 
-![Cleanup Dry-Run](screenshot/cleanup_dry_run.png)
+![Cleanup Dry-Run](screenshot/cleanup-dry-run.png)
 *Previewing resources to be deleted*
 
 ### Cleanup

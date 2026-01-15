@@ -319,3 +319,465 @@
 [1;33m[2026-01-05 13:24:20] [WARN] Could not delete bucket automation-lab-1767618766 automatically[0m
 [0;34m[2026-01-05 13:24:20] [INFO] Searching for EC2 key pairs...[0m
 [0;32m[2026-01-05 13:24:24] [SUCCESS] Deleted Key Pair: automation-key[0m
+[2026-01-12 09:43:10] [ERROR] AWS credentials not configured or invalid for region: eu-west-1
+[2026-01-12 09:43:56] [INFO] Starting EC2 instance creation process
+[2026-01-12 09:43:56] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-12 09:43:59] [INFO] Creating new key pair: automation-key
+[2026-01-12 09:53:59] [INFO] Starting EC2 instance creation process
+[2026-01-12 09:53:59] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-12 09:54:01] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-12 09:54:01] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-12 09:54:01] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-12 09:54:05] [INFO] Launching EC2 instance...
+[2026-01-12 09:54:08] [INFO] Instance launched: i-03b2db0af9ddfea24
+[2026-01-12 09:54:08] [INFO] Waiting for instance to reach RUNNING state...
+[2026-01-12 09:54:28] [INFO] Instance running successfully
+[2026-01-12 09:54:28] [INFO] Resource ID saved for cleanup
+[2026-01-12 09:54:28] [INFO] EC2 setup completed. Instance: i-03b2db0af9ddfea24, IP: 3.249.80.136
+[2026-01-12 09:55:02] [INFO] Starting Security Group creation process
+[2026-01-12 09:55:02] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-12 09:55:06] [INFO] Security Group created: sg-075e1d3fe4a22fc6a
+[2026-01-12 09:55:08] [INFO] Security Group tagged successfully
+[2026-01-12 09:55:08] [INFO] Resource ID saved for cleanup
+[2026-01-12 09:55:09] [INFO] Authorizing port 22 (tcp)...
+[2026-01-12 09:55:11] [INFO] Port 22 authorized successfully
+[2026-01-12 09:55:12] [INFO] Authorizing port 80 (tcp)...
+[2026-01-12 09:55:14] [INFO] Port 80 authorized successfully
+[2026-01-12 09:55:14] [INFO] Security Group setup completed successfully
+[2026-01-12 09:55:14] [INFO] Security Group ID: sg-075e1d3fe4a22fc6a
+[2026-01-12 09:56:01] [INFO] Starting S3 bucket creation process
+[2026-01-12 09:56:01] [INFO] Region: eu-west-1, Bucket: automation-lab-1768211759
+[2026-01-12 09:56:03] [INFO] Creating S3 bucket: automation-lab-1768211759
+[2026-01-12 09:56:05] [INFO] Bucket created: automation-lab-1768211759
+[2026-01-12 09:56:07] [INFO] Bucket tagged successfully
+[2026-01-12 09:56:07] [INFO] Enabling versioning...
+[2026-01-12 09:56:09] [INFO] Versioning enabled successfully
+[2026-01-12 09:56:09] [INFO] Enabling encryption...
+[2026-01-12 09:56:11] [INFO] Encryption enabled successfully
+[2026-01-12 09:56:11] [INFO] Blocking public access...
+[2026-01-12 09:56:13] [INFO] Public access blocked
+[2026-01-12 09:56:13] [INFO] Resource ID saved for cleanup
+[2026-01-12 09:56:15] [INFO] Uploading sample file: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../assets/welcome.txt
+[2026-01-12 09:56:17] [INFO] Sample file uploaded successfully
+[2026-01-12 09:56:17] [INFO] S3 bucket setup completed successfully
+[0;34m[2026-01-12 10:04:39] [INFO] Starting cleanup of AWS resources[0m
+[0;34m[2026-01-12 10:04:39] [INFO] Resources File: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../.created_resources.txt[0m
+[0;34m[2026-01-12 10:04:39] [INFO] Deleting EC2 instances from resources file...[0m
+[0;34m[2026-01-12 10:04:41] [INFO] Terminating instance: i-03b2db0af9ddfea24 (current state: running)[0m
+[0;34m[2026-01-12 10:04:44] [INFO] Waiting for instance i-03b2db0af9ddfea24 to terminate...[0m
+[0;32m[2026-01-12 10:05:32] [SUCCESS] Terminated instance: i-03b2db0af9ddfea24[0m
+[0;34m[2026-01-12 10:05:32] [INFO] Deleting Security Groups from resources file...[0m
+[0;34m[2026-01-12 10:05:39] [INFO] Deleting Security Group: sg-075e1d3fe4a22fc6a[0m
+[0;32m[2026-01-12 10:05:41] [SUCCESS] Deleted Security Group: sg-075e1d3fe4a22fc6a[0m
+[0;34m[2026-01-12 10:05:41] [INFO] Deleting S3 buckets from resources file...[0m
+[0;34m[2026-01-12 10:05:41] [INFO] Processing bucket: automation-lab-1768211759[0m
+[0;34m[2026-01-12 10:05:54] [INFO] Deleting object versions and delete markers for automation-lab-1768211759[0m
+[1;33m[2026-01-12 10:06:07] [WARN] Could not delete bucket automation-lab-1768211759 automatically[0m
+[0;34m[2026-01-12 10:06:07] [INFO] Note: Key pairs are not tracked in resources file[0m
+[0;34m[2026-01-12 10:06:07] [INFO] Key pairs can be manually deleted if needed: automation-key[0m
+[0;34m[2026-01-12 10:06:07] [INFO] Resources file removed after cleanup[0m
+[2026-01-13 02:42:28] [INFO] Starting Security Group creation process
+[2026-01-13 02:42:28] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-13 02:42:34] [INFO] Security Group created: sg-0c7664e8655143289
+[2026-01-13 02:42:37] [INFO] Security Group tagged successfully
+[2026-01-13 02:46:52] [ERROR] AWS credentials not configured or invalid for region: eu-west-1
+[2026-01-13 02:48:32] [INFO] Starting Security Group creation process
+[2026-01-13 02:48:32] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-13 02:48:34] [INFO] Security group 'devops-sg' already exists: sg-0c7664e8655143289 (idempotent: skipping creation)
+[2026-01-13 02:48:35] [INFO] Authorizing port 22 (tcp)...
+[2026-01-13 02:48:38] [INFO] Port 22 authorized successfully
+[2026-01-13 02:48:39] [INFO] Authorizing port 80 (tcp)...
+[2026-01-13 02:48:42] [INFO] Port 80 authorized successfully
+[2026-01-13 02:48:42] [INFO] Security Group setup completed successfully
+[2026-01-13 02:48:42] [INFO] Security Group ID: sg-0c7664e8655143289
+[2026-01-13 02:49:11] [INFO] Starting EC2 instance creation process
+[2026-01-13 02:49:11] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-13 02:49:13] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-13 02:49:13] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-13 02:49:14] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-13 02:49:19] [INFO] Launching EC2 instance...
+[2026-01-13 02:49:22] [INFO] Instance launched: i-0157d0ffcb176d8a5
+[2026-01-13 02:49:22] [INFO] Waiting for instance to reach RUNNING state...
+[2026-01-13 02:49:43] [INFO] Instance running successfully
+[2026-01-13 02:49:44] [INFO] Resource saved to state
+[2026-01-13 02:49:44] [INFO] EC2 setup completed. Instance: i-0157d0ffcb176d8a5, IP: 34.254.244.33
+[2026-01-13 02:50:38] [INFO] Starting S3 bucket creation process
+[2026-01-13 02:50:38] [INFO] Region: eu-west-1, Bucket: automation-lab-1768272635
+[2026-01-13 02:50:41] [INFO] Creating S3 bucket: automation-lab-1768272635
+[2026-01-13 02:50:44] [INFO] Bucket created: automation-lab-1768272635
+[2026-01-13 02:50:46] [INFO] Bucket tagged successfully
+[2026-01-13 02:50:46] [INFO] Enabling versioning...
+[2026-01-13 02:50:49] [INFO] Versioning enabled successfully
+[2026-01-13 02:50:49] [INFO] Enabling encryption...
+[2026-01-13 02:50:52] [INFO] Encryption enabled successfully
+[2026-01-13 02:50:52] [INFO] Blocking public access...
+[2026-01-13 02:50:54] [INFO] Public access blocked
+[2026-01-13 02:50:55] [INFO] S3 bucket saved to state
+[2026-01-13 02:50:57] [INFO] Uploading sample file: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../assets/welcome.txt
+[2026-01-13 02:50:59] [INFO] Sample file uploaded successfully
+[2026-01-13 02:50:59] [INFO] S3 bucket setup completed successfully
+[0;34m[2026-01-13 02:54:28] [INFO] Running drift detection...[0m
+[0;34m[2026-01-13 02:54:34] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-13 02:54:34] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-13 02:54:34] [INFO] Found 1 EC2 instance(s) in state[0m
+[0;34m[2026-01-13 02:54:40] [INFO] Terminating instance: i-0157d0ffcb176d8a5 (automation-key-instance, current state: running)[0m
+[0;34m[2026-01-13 02:54:43] [INFO] Waiting for instance i-0157d0ffcb176d8a5 to terminate...[0m
+[0;32m[2026-01-13 02:55:32] [SUCCESS] Terminated instance: i-0157d0ffcb176d8a5[0m
+[0;34m[2026-01-13 02:55:33] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-13 02:55:33] [INFO] No Security Groups found in state (already clean)[0m
+[0;34m[2026-01-13 02:55:33] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-13 02:55:33] [INFO] Found 1 S3 bucket(s) in state[0m
+[0;34m[2026-01-13 02:55:36] [INFO] Processing bucket: automation-lab-1768272635 (region: eu-west-1)[0m
+[0;34m[2026-01-13 02:55:51] [INFO] Deleting object versions and delete markers for automation-lab-1768272635[0m
+[1;33m[2026-01-13 02:56:15] [WARN] Could not delete bucket automation-lab-1768272635 automatically[0m
+[0;34m[2026-01-13 02:56:15] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-13 02:56:16] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-13 03:00:21] [INFO] Starting Security Group creation process
+[2026-01-13 03:00:21] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-13 03:00:24] [INFO] Security group 'devops-sg' already exists: sg-0c7664e8655143289 (idempotent: skipping creation)
+[2026-01-13 03:00:25] [INFO] Authorizing port 22 (tcp)...
+[2026-01-13 03:00:28] [ERROR] Failed to authorize port 22
+[2026-01-13 03:00:28] [WARN] Cleaning up security group: sg-0c7664e8655143289
+[2026-01-13 03:01:11] [INFO] Starting Security Group creation process
+[2026-01-13 03:01:11] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-13 03:01:17] [INFO] Security Group created: sg-0054a2dfc1dd19afb
+[2026-01-13 03:01:20] [INFO] Security Group tagged successfully
+[2026-01-13 03:01:21] [INFO] Security group saved to state
+[2026-01-13 03:01:22] [INFO] Authorizing port 22 (tcp)...
+[2026-01-13 03:01:25] [INFO] Port 22 authorization attempted
+[2026-01-13 03:01:26] [INFO] Authorizing port 80 (tcp)...
+[2026-01-13 03:01:29] [INFO] Port 80 authorization attempted
+[2026-01-13 03:01:29] [INFO] Security Group setup completed successfully
+[2026-01-13 03:01:29] [INFO] Security Group ID: sg-0054a2dfc1dd19afb
+[0;34m[2026-01-13 03:02:24] [INFO] Running drift detection...[0m
+[0;34m[2026-01-13 03:02:27] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-13 03:02:28] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-13 03:02:28] [INFO] No EC2 instances found in state (already clean)[0m
+[0;34m[2026-01-13 03:02:28] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-13 03:02:28] [INFO] Found 1 Security Group(s) in state[0m
+[0;34m[2026-01-13 03:02:39] [INFO] Deleting Security Group: sg-0054a2dfc1dd19afb (devops-sg)[0m
+[0;32m[2026-01-13 03:02:41] [SUCCESS] Deleted Security Group: sg-0054a2dfc1dd19afb[0m
+[0;34m[2026-01-13 03:02:42] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-13 03:02:42] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-13 03:02:42] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-13 03:02:43] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-13 03:17:11] [INFO] Starting Security Group creation process
+[2026-01-13 03:17:12] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-13 03:17:16] [INFO] Security Group created: sg-06483942317cdd19d
+[2026-01-13 03:17:18] [INFO] Security Group tagged successfully
+[2026-01-13 03:17:19] [INFO] Security group saved to state
+[2026-01-13 03:17:20] [INFO] Authorizing port 22 (tcp)...
+[2026-01-13 03:17:23] [INFO] Port 22 authorization attempted
+[2026-01-13 03:17:23] [INFO] Authorizing port 80 (tcp)...
+[2026-01-13 03:17:26] [INFO] Port 80 authorization attempted
+[2026-01-13 03:17:26] [INFO] Security Group setup completed successfully
+[2026-01-13 03:17:26] [INFO] Security Group ID: sg-06483942317cdd19d
+[0;34m[2026-01-13 03:18:18] [INFO] Running drift detection...[0m
+[0;34m[2026-01-13 03:18:20] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-13 03:18:20] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-13 03:18:20] [INFO] No EC2 instances found in state (already clean)[0m
+[0;34m[2026-01-13 03:18:21] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-13 03:18:21] [INFO] Found 1 Security Group(s) in state[0m
+[0;34m[2026-01-13 03:18:30] [INFO] Deleting Security Group: sg-06483942317cdd19d (devops-sg)[0m
+[0;32m[2026-01-13 03:18:32] [SUCCESS] Deleted Security Group: sg-06483942317cdd19d[0m
+[0;34m[2026-01-13 03:18:33] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-13 03:18:33] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-13 03:18:33] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-13 03:18:33] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-13 04:23:35] [ERROR] AWS credentials not configured or invalid for region: eu-west-1
+[2026-01-13 04:23:51] [INFO] Starting Security Group creation process
+[2026-01-13 04:23:51] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-13 04:23:57] [INFO] Security Group created: sg-01f0ed6498f019015
+[2026-01-13 04:23:59] [INFO] Security Group tagged successfully
+[2026-01-13 04:24:01] [INFO] Security group saved to state
+[2026-01-13 04:24:02] [INFO] Authorizing port 22 (tcp)...
+[2026-01-13 04:24:05] [INFO] Port 22 authorization attempted
+[2026-01-13 04:24:06] [INFO] Authorizing port 80 (tcp)...
+[2026-01-13 04:24:09] [INFO] Port 80 authorization attempted
+[2026-01-13 04:24:09] [INFO] Security Group setup completed successfully
+[2026-01-13 04:24:09] [INFO] Security Group ID: sg-01f0ed6498f019015
+[0;34m[2026-01-13 04:28:25] [INFO] Running drift detection...[0m
+[0;34m[2026-01-13 04:28:29] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-13 04:28:29] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-13 04:28:29] [INFO] No EC2 instances found in state (already clean)[0m
+[0;34m[2026-01-13 04:28:29] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-13 04:28:30] [INFO] Found 1 Security Group(s) in state[0m
+[0;34m[2026-01-13 04:28:41] [INFO] Deleting Security Group: sg-01f0ed6498f019015 (devops-sg)[0m
+[0;32m[2026-01-13 04:28:43] [SUCCESS] Deleted Security Group: sg-01f0ed6498f019015[0m
+[0;34m[2026-01-13 04:28:47] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-13 04:28:47] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-13 04:28:47] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-13 04:28:48] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-13 04:29:14] [INFO] State file not found. Initializing...
+[2026-01-13 04:29:37] [INFO] Starting Security Group creation process
+[2026-01-13 04:29:37] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-13 04:29:43] [INFO] Security Group created: sg-0bd0deca225727198
+[2026-01-13 04:29:46] [INFO] Security Group tagged successfully
+[2026-01-13 04:29:49] [INFO] Security group saved to state
+[2026-01-13 04:29:50] [INFO] Authorizing port 22 (tcp)...
+[2026-01-13 04:29:53] [INFO] Port 22 authorization attempted
+[2026-01-13 04:29:54] [INFO] Authorizing port 80 (tcp)...
+[2026-01-13 04:29:57] [INFO] Port 80 authorization attempted
+[2026-01-13 04:29:57] [INFO] Security Group setup completed successfully
+[2026-01-13 04:29:57] [INFO] Security Group ID: sg-0bd0deca225727198
+[0;34m[2026-01-13 04:31:45] [INFO] Running drift detection...[0m
+[0;34m[2026-01-13 04:31:48] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-13 04:31:49] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-13 04:31:49] [INFO] No EC2 instances found in state (already clean)[0m
+[0;34m[2026-01-13 04:31:49] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-13 04:31:49] [INFO] Found 1 Security Group(s) in state[0m
+[0;34m[2026-01-13 04:32:00] [INFO] Deleting Security Group: sg-0bd0deca225727198 (devops-sg)[0m
+[0;32m[2026-01-13 04:32:03] [SUCCESS] Deleted Security Group: sg-0bd0deca225727198[0m
+[0;34m[2026-01-13 04:32:06] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-13 04:32:07] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-13 04:32:07] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-13 04:32:07] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-13 16:17:31] [INFO] Starting EC2 instance creation process
+[2026-01-13 16:17:32] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-13 16:18:20] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-13 16:18:22] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-13 16:18:28] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-13 16:19:28] [INFO] Launching EC2 instance...
+[2026-01-13 16:20:10] [INFO] Instance launched: i-01bee18bc300206ec
+[2026-01-13 16:20:14] [INFO] Waiting for instance to reach RUNNING state...
+[2026-01-13 16:21:33] [INFO] Instance running successfully
+[2026-01-13 16:23:41] [INFO] Resource saved to state
+[2026-01-13 16:23:57] [INFO] EC2 setup completed. Instance: i-01bee18bc300206ec, IP: 63.32.101.70
+[2026-01-13 16:27:04] [INFO] Starting S3 bucket creation process
+[2026-01-13 16:27:08] [INFO] Region: eu-west-1, Bucket: automation-lab-1768321587
+[2026-01-13 16:30:15] [INFO] Creating S3 bucket: automation-lab-1768321587
+[2026-01-13 16:31:50] [INFO] Bucket created: automation-lab-1768321587
+[2026-01-13 16:35:11] [INFO] Bucket tagged successfully
+[2026-01-13 16:35:13] [INFO] Enabling versioning...
+[2026-01-13 16:39:46] [ERROR] Failed to enable versioning
+[2026-01-13 16:40:11] [WARN] Cleaning up S3 bucket: automation-lab-1768321587
+[0;34m[2026-01-13 16:46:17] [INFO] Running drift detection...[0m
+[0;34m[2026-01-13 16:46:42] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-13 16:46:42] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-13 16:46:43] [INFO] Found 1 EC2 instance(s) in state[0m
+[0;34m[2026-01-13 16:46:51] [INFO] Terminating instance: i-01bee18bc300206ec (automation-key-instance, current state: running)[0m
+[0;34m[2026-01-13 16:46:55] [INFO] Waiting for instance i-01bee18bc300206ec to terminate...[0m
+[0;32m[2026-01-13 16:48:30] [SUCCESS] Terminated instance: i-01bee18bc300206ec[0m
+[0;34m[2026-01-13 16:48:37] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-13 16:48:38] [INFO] No Security Groups found in state (already clean)[0m
+[0;34m[2026-01-13 16:48:38] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-13 16:48:39] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-13 16:48:39] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-13 16:48:40] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-14 10:57:16] [INFO] Starting EC2 instance creation process
+[2026-01-14 10:57:16] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 10:58:08] [INFO] Starting EC2 instance creation process
+[2026-01-14 10:58:08] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 10:58:10] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 10:58:10] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 10:58:11] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 10:58:14] [INFO] Launching EC2 instance...
+[2026-01-14 10:58:17] [INFO] Instance launched: i-0b965f5951549d584
+[2026-01-14 10:58:17] [INFO] Waiting for instance to reach RUNNING state...
+[2026-01-14 10:58:36] [INFO] Instance running successfully
+[2026-01-14 10:58:39] [INFO] Resource saved to state
+[2026-01-14 10:58:39] [INFO] EC2 setup completed. Instance: i-0b965f5951549d584, IP: 108.129.120.238
+[2026-01-14 10:59:04] [INFO] Starting EC2 instance creation process
+[2026-01-14 10:59:04] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 10:59:06] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 10:59:06] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 10:59:06] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 10:59:09] [INFO] EC2 instance with name 'automation-key-instance' already exists: i-0b965f5951549d584 
+[2026-01-14 10:59:12] [INFO] EC2 setup completed. Instance: i-0b965f5951549d584, IP: 108.129.120.238
+[0;34m[2026-01-14 10:59:52] [INFO] Running drift detection...[0m
+[0;34m[2026-01-14 10:59:55] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-14 10:59:55] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-14 10:59:55] [INFO] Found 1 EC2 instance(s) in state[0m
+[0;34m[2026-01-14 10:59:59] [INFO] Terminating instance: i-0b965f5951549d584 (automation-key-instance, current state: running)[0m
+[0;34m[2026-01-14 11:00:01] [INFO] Waiting for instance i-0b965f5951549d584 to terminate...[0m
+[0;32m[2026-01-14 11:01:19] [SUCCESS] Terminated instance: i-0b965f5951549d584[0m
+[0;34m[2026-01-14 11:01:21] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-14 11:01:21] [INFO] No Security Groups found in state (already clean)[0m
+[0;34m[2026-01-14 11:01:21] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-14 11:01:22] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-14 11:01:22] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-14 11:01:22] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-14 11:04:19] [INFO] Starting EC2 instance creation process
+[2026-01-14 11:04:19] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 11:04:21] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 11:04:21] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 11:04:21] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 11:04:25] [INFO] Launching EC2 instance...
+[2026-01-14 11:04:27] [ERROR] Dry-run validation failed for EC2 instance creation
+[2026-01-14 11:06:26] [INFO] Starting EC2 instance creation process
+[2026-01-14 11:06:27] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 11:06:29] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 11:06:29] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 11:06:29] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 11:06:32] [INFO] Launching EC2 instance...
+[0;34m[2026-01-14 11:06:57] [INFO] Running drift detection...[0m
+[0;34m[2026-01-14 11:06:57] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-14 11:06:57] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-14 11:06:57] [INFO] No EC2 instances found in state (already clean)[0m
+[0;34m[2026-01-14 11:06:57] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-14 11:06:58] [INFO] No Security Groups found in state (already clean)[0m
+[0;34m[2026-01-14 11:06:58] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-14 11:06:58] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-14 11:06:58] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-14 11:06:58] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-14 11:09:55] [INFO] Starting EC2 instance creation process
+[2026-01-14 11:09:55] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 11:09:57] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 11:09:57] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 11:09:57] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 11:10:01] [INFO] Launching EC2 instance...
+[2026-01-14 11:10:25] [INFO] Starting EC2 instance creation process
+[2026-01-14 11:10:25] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 11:10:27] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 11:10:27] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 11:10:27] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 11:10:31] [INFO] Launching EC2 instance...
+[2026-01-14 11:10:33] [INFO] Instance launched: i-03c5fbc28924e3539
+[2026-01-14 11:10:33] [INFO] Waiting for instance to reach RUNNING state...
+[2026-01-14 11:10:53] [INFO] Instance running successfully
+[2026-01-14 11:10:56] [INFO] Resource saved to state
+[2026-01-14 11:10:56] [INFO] EC2 setup completed. Instance: i-03c5fbc28924e3539, IP: 108.129.253.65
+[0;34m[2026-01-14 11:12:52] [INFO] Running drift detection...[0m
+[0;34m[2026-01-14 11:12:54] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-14 11:12:54] [INFO] [DRY RUN MODE] No resources will actually be deleted[0m
+[0;34m[2026-01-14 11:12:54] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-14 11:12:54] [INFO] Found 1 EC2 instance(s) in state[0m
+[0;34m[2026-01-14 11:12:56] [INFO] [DRY RUN] Would terminate instance: i-03c5fbc28924e3539 (automation-key-instance)[0m
+[0;34m[2026-01-14 11:12:56] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-14 11:12:57] [INFO] No Security Groups found in state (already clean)[0m
+[0;34m[2026-01-14 11:12:57] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-14 11:12:57] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-14 11:12:57] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-14 11:12:57] [INFO] No key pairs found in state (already clean)[0m
+[0;34m[2026-01-14 11:13:26] [INFO] Running drift detection...[0m
+[0;34m[2026-01-14 11:13:28] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-14 11:13:28] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-14 11:13:29] [INFO] Found 1 EC2 instance(s) in state[0m
+[0;34m[2026-01-14 11:13:32] [INFO] Terminating instance: i-03c5fbc28924e3539 (automation-key-instance, current state: running)[0m
+[0;34m[2026-01-14 11:13:35] [INFO] Waiting for instance i-03c5fbc28924e3539 to terminate...[0m
+[0;32m[2026-01-14 11:14:07] [SUCCESS] Terminated instance: i-03c5fbc28924e3539[0m
+[0;34m[2026-01-14 11:14:10] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-14 11:14:10] [INFO] No Security Groups found in state (already clean)[0m
+[0;34m[2026-01-14 11:14:10] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-14 11:14:10] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-14 11:14:10] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-14 11:14:10] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-14 11:16:48] [INFO] Starting EC2 instance creation process
+[2026-01-14 11:16:48] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 11:16:50] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 11:16:50] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 11:16:50] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 11:16:54] [INFO] Launching EC2 instance...
+[2026-01-14 11:21:00] [INFO] Starting EC2 instance creation process
+[2026-01-14 11:21:01] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 11:21:02] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 11:21:02] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 11:21:03] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 11:21:06] [INFO] Launching EC2 instance...
+[2026-01-14 11:21:09] [INFO] Instance launched: i-08ae2c14560888ee9
+[2026-01-14 11:21:09] [INFO] Waiting for instance to reach RUNNING state...
+[2026-01-14 11:21:28] [INFO] Instance running successfully
+[2026-01-14 11:21:31] [INFO] Resource saved to state
+[2026-01-14 11:21:31] [INFO] EC2 setup completed. Instance: i-08ae2c14560888ee9, IP: 54.77.153.150
+[0;34m[2026-01-14 11:26:10] [INFO] Running drift detection...[0m
+[0;34m[2026-01-14 11:26:12] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-14 11:26:12] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-14 11:26:13] [INFO] Found 1 EC2 instance(s) in state[0m
+[0;34m[2026-01-14 11:26:17] [INFO] Terminating instance: i-08ae2c14560888ee9 (automation-key-instance, current state: running)[0m
+[0;34m[2026-01-14 11:26:19] [INFO] Waiting for instance i-08ae2c14560888ee9 to terminate...[0m
+[0;32m[2026-01-14 11:27:22] [SUCCESS] Terminated instance: i-08ae2c14560888ee9[0m
+[0;34m[2026-01-14 11:27:24] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-14 11:27:25] [INFO] No Security Groups found in state (already clean)[0m
+[0;34m[2026-01-14 11:27:25] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-14 11:27:25] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-14 11:27:25] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-14 11:27:26] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-14 11:34:13] [INFO] Starting EC2 instance creation process
+[2026-01-14 11:34:13] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 11:34:15] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 11:34:15] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 11:34:15] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 11:34:19] [INFO] Launching EC2 instance...
+[2026-01-14 11:34:46] [INFO] Starting EC2 instance creation process
+[2026-01-14 11:34:46] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 11:34:48] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 11:34:48] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 11:34:48] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 11:34:52] [INFO] Launching EC2 instance...
+[2026-01-14 11:34:55] [INFO] Instance launched: i-0982be21481f8eae0
+[2026-01-14 11:34:55] [INFO] Waiting for instance to reach RUNNING state...
+[2026-01-14 11:35:14] [INFO] Instance running successfully
+[2026-01-14 11:35:17] [INFO] Resource saved to state
+[2026-01-14 11:35:17] [INFO] EC2 setup completed. Instance: i-0982be21481f8eae0, IP: 54.74.30.35
+[2026-01-14 11:35:48] [INFO] Starting Security Group creation process
+[2026-01-14 11:35:48] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-14 11:35:52] [INFO] Security Group created: sg-0fd4eacb08ee6a45b
+[2026-01-14 11:35:54] [INFO] Security Group tagged successfully
+[2026-01-14 11:35:57] [INFO] Security group saved to state
+[2026-01-14 11:35:58] [INFO] Authorizing port 22 (tcp)...
+[2026-01-14 11:36:00] [INFO] Port 22 authorization attempted
+[2026-01-14 11:36:01] [INFO] Authorizing port 80 (tcp)...
+[2026-01-14 11:36:04] [INFO] Port 80 authorization attempted
+[2026-01-14 11:36:04] [INFO] Security Group setup completed successfully
+[2026-01-14 11:36:04] [INFO] Security Group ID: sg-0fd4eacb08ee6a45b
+[0;34m[2026-01-14 11:36:39] [INFO] Running drift detection...[0m
+[0;34m[2026-01-14 11:36:43] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-14 11:36:43] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-14 11:36:43] [INFO] Found 1 EC2 instance(s) in state[0m
+[0;34m[2026-01-14 11:36:47] [INFO] Terminating instance: i-0982be21481f8eae0 (automation-key-instance, current state: running)[0m
+[0;34m[2026-01-14 11:36:49] [INFO] Waiting for instance i-0982be21481f8eae0 to terminate...[0m
+[0;32m[2026-01-14 11:37:37] [SUCCESS] Terminated instance: i-0982be21481f8eae0[0m
+[0;34m[2026-01-14 11:37:40] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-14 11:37:40] [INFO] Found 1 Security Group(s) in state[0m
+[0;34m[2026-01-14 11:37:50] [INFO] Deleting Security Group: sg-0fd4eacb08ee6a45b (devops-sg)[0m
+[0;32m[2026-01-14 11:37:52] [SUCCESS] Deleted Security Group: sg-0fd4eacb08ee6a45b[0m
+[0;34m[2026-01-14 11:37:55] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-14 11:37:55] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-14 11:37:56] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-14 11:37:56] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-14 11:39:07] [INFO] Starting EC2 instance creation process
+[2026-01-14 11:39:07] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 11:39:09] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 11:39:09] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 11:39:09] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 11:39:13] [INFO] Launching EC2 instance...
+[2026-01-14 11:45:35] [INFO] Starting Security Group creation process
+[2026-01-14 11:45:36] [INFO] Region: eu-west-1, Name: devops-sg
+[2026-01-14 11:46:47] [INFO] Starting EC2 instance creation process
+[2026-01-14 11:46:47] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 11:46:50] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 11:46:50] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 11:46:50] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 11:46:54] [INFO] Launching EC2 instance...
+[2026-01-14 11:47:54] [INFO] Starting S3 bucket creation process
+[2026-01-14 11:47:54] [INFO] Region: eu-west-1, Bucket: automation-lab-1768391272
+[2026-01-14 11:47:56] [INFO] Creating S3 bucket: automation-lab-1768391272
+[0;34m[2026-01-14 11:48:59] [INFO] Running drift detection...[0m
+[0;34m[2026-01-14 11:49:00] [INFO] Starting cleanup of AWS resources from state[0m
+[0;34m[2026-01-14 11:49:00] [INFO] [DRY RUN MODE] No resources will actually be deleted[0m
+[0;34m[2026-01-14 11:49:00] [INFO] Deleting EC2 instances from state...[0m
+[0;34m[2026-01-14 11:49:00] [INFO] No EC2 instances found in state (already clean)[0m
+[0;34m[2026-01-14 11:49:00] [INFO] Deleting Security Groups from state...[0m
+[0;34m[2026-01-14 11:49:01] [INFO] No Security Groups found in state (already clean)[0m
+[0;34m[2026-01-14 11:49:01] [INFO] Deleting S3 buckets from state...[0m
+[0;34m[2026-01-14 11:49:01] [INFO] No S3 buckets found in state (already clean)[0m
+[0;34m[2026-01-14 11:49:01] [INFO] Deleting key pairs from state...[0m
+[0;34m[2026-01-14 11:49:02] [INFO] No key pairs found in state (already clean)[0m
+[2026-01-14 11:51:34] [INFO] Starting S3 bucket creation process
+[2026-01-14 11:51:34] [INFO] Region: eu-west-1, Bucket: automation-lab-1768391492
+[2026-01-14 11:51:37] [INFO] Creating S3 bucket: automation-lab-1768391492
+[2026-01-14 11:54:03] [INFO] Starting S3 bucket creation process
+[2026-01-14 11:54:04] [INFO] Region: eu-west-1, Bucket: automation-lab-1768391641
+[2026-01-14 11:54:06] [INFO] Creating S3 bucket: automation-lab-1768391641
+[2026-01-14 11:55:58] [INFO] Starting S3 bucket creation process
+[2026-01-14 11:55:58] [INFO] Region: eu-west-1, Bucket: automation-lab-1768391756
+[2026-01-14 11:56:01] [INFO] Creating S3 bucket: automation-lab-1768391756
+[2026-01-14 11:56:33] [INFO] Starting S3 bucket creation process
+[2026-01-14 11:56:33] [INFO] Region: eu-west-1, Bucket: automation-lab-1768391791
+[2026-01-14 11:56:36] [INFO] Creating S3 bucket: automation-lab-1768391791
+[2026-01-14 12:02:51] [INFO] Starting EC2 instance creation process
+[2026-01-14 12:02:51] [INFO] Region: eu-west-1, AMI: ami-09c54d172e7aa3d9a, Instance Type: t3.micro
+[2026-01-14 12:02:54] [INFO] AWS key pair 'automation-key' already exists
+[2026-01-14 12:02:54] [INFO] Local private key exists: /c/Users/IlliasuAbubakar/OneDrive - AmaliTech gGmbH/Desktop/aws-automation-lab/scripts/../keys/automation-key.pem
+[2026-01-14 12:02:54] [INFO] Validating AMI: ami-09c54d172e7aa3d9a
+[2026-01-14 12:02:58] [INFO] Launching EC2 instance...

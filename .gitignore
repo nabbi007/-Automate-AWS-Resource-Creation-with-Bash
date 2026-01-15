@@ -3,9 +3,26 @@ keys/*.pem
 *.pem
 .env
 
+# State files (contains resource IDs)
+.aws-resources.state.json
+.aws-resources.state.json.*
+.state.lock
+.remote-backend-config
+*.state.json
+*.state.json.*
+
+# Old resources file (if exists)
+.created_resources.txt
+.created_resources.txt.backup
+
 # Logs
 logs/
 *.log
+
+# Temporary files
+*.tmp
+*.temp
+.state.lock.*
 
 # OS / editors
 .DS_Store
@@ -13,3 +30,8 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+
+# Backup files
+*~
+*.bak
+*.backup
